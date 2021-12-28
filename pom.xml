@@ -19,8 +19,7 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>2.5.4.Final</quarkus.platform.version>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-        <wiremock.version>2.32.0</wiremock.version>
-    </properties>
+           </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -76,10 +75,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8</artifactId>
-            <scope>test</scope>
-            <version>${wiremock.version}</version>
+            <groupId>io.muserver</groupId>
+            <artifactId>mu-server</artifactId>
+            <version>0.72.1</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
