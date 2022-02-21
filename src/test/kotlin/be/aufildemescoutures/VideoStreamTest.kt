@@ -22,7 +22,7 @@ class VideoStreamTest {
     private val comment_rate = "ten_per_second"
     private val fields = URLEncoder.encode("from{name,id},created_time,message", "UTF-8")
 
-    private val LOG=Logger.getLogger(VideoStreamTest::class.java)
+    private val LOG=Logger.getLogger(javaClass)
 
     @Test
     fun testVideoStream(){
@@ -30,7 +30,7 @@ class VideoStreamTest {
             .collect().asList().await().indefinitely()
         LOG.debug(comments)
         assertAll("Comments retrieval",
-            { assertEquals(3,comments.size)}
+            { assertEquals(7,comments.size)}
         )
     }
 

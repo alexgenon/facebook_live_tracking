@@ -1,6 +1,8 @@
 package be.aufildemescoutures
 
+import be.aufildemescoutures.api.MockServer
 import be.aufildemescoutures.domain.ActionType
+import be.aufildemescoutures.domain.Comment
 import be.aufildemescoutures.infrastructure.facebook.FacebookCollector
 import be.aufildemescoutures.infrastructure.facebook.VideoStream
 import io.quarkus.test.common.QuarkusTestResource
@@ -17,10 +19,7 @@ import javax.ws.rs.core.MediaType
 @QuarkusTestResource(FacebookMockExtension::class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class FacebookCollectorTest {
-    val comment_stream = """
-    data:{"from":{"name":"Ariane Collard","id":"1088099037893657"},"created_time":"2021-12-19T05:38:29+0000","message":"je prends le 5","id":"461572928685550_461573375352172"}
-    data:{"from":{"name":"Nathalie Macquoi","id":"1088099037893657"},"created_time":"2021-12-19T05:38:40+0000","message":"revoir le 4, 2, 39, 11","id":"461572928685550_461573495352160"}
-""".trimIndent().split("\n")
+    val comment_stream =MockServer.comment_stream.split("\n")
 
     val LOG = Logger.getLogger(VideoStream::class.java)
     val video = "1234"
@@ -28,60 +27,51 @@ class FacebookCollectorTest {
     @Test
     @Order(1)
     fun testParsingBuy() {
-        val parsedComment = FacebookCollector.fromFacebook(comment_stream[0])
+        var parsedComment = FacebookCollector.fromFacebook(comment_stream[0])
         LOG.debug(parsedComment)
-        assertAll("Correctly parse a comment",
+        assertAll("Correctly parse a buy comment - prend",
             { assertEquals(5, parsedComment[0].item) },
             { assertEquals(LocalDateTime.parse("2021-12-19T05:38:29+0000", FacebookCollector.facebookDatePattern)
                 , parsedComment[0].timestamp) },
-            { assertEquals("Ariane Collard", parsedComment[0].user.name) },
+            { assertEquals("Jeff Bezos", parsedComment[0].user.name) },
             { assertEquals(ActionType.BUY, parsedComment[0].action) }
+        )
+        parsedComment = FacebookCollector.fromFacebook(comment_stream[6])
+        LOG.debug(parsedComment)
+        assertAll("Correctly parse a buy comment - achète",
+            { assert(parsedComment.map(Comment::item).toSet().equals(setOf(14,22))) },
+            { assertEquals(ActionType.BUY, parsedComment[0].action) },
+            { assertEquals(ActionType.BUY, parsedComment[1].action) }
         )
     }
 
     @Test
     @Order(2)
-    fun testTracking() {
+    fun testParsingReview(){
+        var parsedComment = FacebookCollector.fromFacebook(comment_stream[1])
+        LOG.debug(parsedComment)
+        assertAll("Correctly parse a review comment",
+            { assertEquals(4,parsedComment.size)},
+            { assert(parsedComment.map(Comment::item).toSet().equals(setOf(4, 2, 39, 11))) },
+            { assertEquals(LocalDateTime.parse("2021-12-19T05:38:40+0000", FacebookCollector.facebookDatePattern)
+                , parsedComment[0].timestamp) },
+            { assertEquals("Bill Gates", parsedComment[0].user.name) },
+            { assertEquals(ActionType.REVIEW, parsedComment[0].action) }
+        )
+    }
+
+
+    @Test
+    @Order(2)
+    fun testStartTracking() {
         RestAssured.given()
             .`when`()
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .param("video", video)
-            .param("access_token","5678")
+            .param("liveId", video)
             .post("/live")
             .then()
             .statusCode(200)
-            .body(CoreMatchers.`is`(video))
-    }
-
-    @Test
-    @Order(3)
-    fun testNonExistentCommentStream() {
-        RestAssured.given()
-            .`when`()
-            .get("/live/coucou_gamin")
-            .then()
-            .statusCode(404)
-    }
-
-    @Test
-    @Order(4)
-    fun testCommentStream() {
-        RestAssured.given()
-            .`when`()
-            .get("/live/$video")
-            .then()
-            .statusCode(200)
-            .body(CoreMatchers.`is`("Hello RESTEasy Reactive"))
-    }
-
-    @Test
-    @Order(5)
-    fun testHardcodedStream(){
-        RestAssured.given()
-            .`when`()
-            .get("/live/test")
-            .then()
-            .statusCode(200)
-            .body(CoreMatchers.`is`("Hello RESTEasy Reactive"))
+            .body(CoreMatchers.`is`("Started collection of $video"))
     }
 }

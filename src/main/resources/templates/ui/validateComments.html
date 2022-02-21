@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Validation Commentaire</title>
+</head>
+<style>
+    .styled-table {
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        width: 90%;
+    }
+
+    .styled-table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+    }
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #009879;
+    }
+    .styled-table tbody tr.active-row {
+        font-weight: bold;
+        color: #009879;
+    }
+
+</style>
+<script>
+    const validationSource = new EventSource("/live/comments/validation/stream")
+    validationSource.onmessage = function (event) {
+        const commentTable = document.getElementById("validationTable");
+        const comment = JSON.parse(event.data)
+        const newRow = document.createElement("tr");
+        const name=document.createElement("td")
+        name.textContent=comment.user.name;
+        newRow.appendChild(name)
+
+        const item=document.createElement("td")
+        item.textContent=comment.item;
+        newRow.appendChild(item)
+
+        const action=document.createElement("td")
+        action.textContent=comment.action;
+        newRow.appendChild(action)
+
+        const fullComment=document.createElement("td")
+        fullComment.textContent=comment.fullComment;
+        newRow.appendChild(fullComment)
+
+        const validation=document.createElement("td")
+        validation.textContent="to do";
+        newRow.appendChild(validation)
+
+        commentTable.appendChild(newRow);
+    }
+</script>
+<body>
+<h1>Flux de commentaires</h1>
+<table id="validationTable" class="styled-table">
+    <thead>
+    <tr>
+        <td>Nom</td>
+        <td>Numéro</td>
+        <td>Action</td>
+        <td>Commentaire complet</td>
+    </tr>
+    </thead>
+</table>
+</body>
+</html>
