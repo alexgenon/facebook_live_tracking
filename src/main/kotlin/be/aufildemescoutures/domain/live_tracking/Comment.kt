@@ -10,7 +10,7 @@ data class Comment(
     val fullComment: String,
     val action: ActionType
 ){
-    val id =commentId+"#"+item
+    val id = CommentId(commentId+"#"+item)
 }
 
 data class FacebookUser(val name: String, val id: String) {
@@ -22,3 +22,5 @@ data class FacebookUser(val name: String, val id: String) {
 
 enum class ActionType { BUY, REVIEW, QUESTION, NOTHING }
 typealias CommentList = List<Comment>
+@JvmInline
+value class CommentId(val id: String)

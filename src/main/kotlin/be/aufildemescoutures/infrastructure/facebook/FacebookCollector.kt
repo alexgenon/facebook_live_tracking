@@ -57,7 +57,7 @@ class FacebookCollector {
         val LOG = Logger.getLogger(javaClass)
         val facebookDatePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
         val numberPattern = Regex("\\d+")
-        val buyKeywords = setOf("prend", "achete", "achète")
+        val buyKeywords = setOf("prend", "achet", "achèt")
         val reviewKeywords = setOf("revoir")
         val questionKeywords = setOf("?")
         private fun JsonElement?.toCleanString() = this.toString().trim('"')
@@ -100,7 +100,7 @@ class FacebookCollector {
                     try {
                         it.toInt()
                     } catch (numberException: NumberFormatException){
-                        LOG.warn("found a number that cannot be parsed $it",numberException)
+                        LOG.warn("found a numberf that cannot be parsed $it",numberException)
                         -1
                     }
                 }

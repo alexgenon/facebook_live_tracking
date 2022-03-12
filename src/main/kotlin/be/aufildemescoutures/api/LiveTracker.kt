@@ -53,7 +53,7 @@ class LiveTracker {
     @Path("/comments/validation/stream")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     @RestSseElementType(MediaType.APPLICATION_JSON)
-    fun getStreamToValidate():Multi<Comment> = validationService.commentsToValidate()
+    fun getStreamToValidate():Multi<Comment> = validationService.streamOfCommentsToValidate()
 
     @GET
     @Path("/reviews/stream")

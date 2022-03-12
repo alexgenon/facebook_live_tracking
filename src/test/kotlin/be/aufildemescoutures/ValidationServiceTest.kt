@@ -40,7 +40,7 @@ class ValidationServiceTest {
 
         lateinit var commentsList:List<Comment>
         try {
-            commentsList = validationService.commentsToValidate()
+            commentsList = validationService.streamOfCommentsToValidate()
                 .onItem().invoke { comment -> LOG.debug("Comment to validate: $comment") }
                 .collect().asList().await().indefinitely()
         } catch (e:io.smallrye.mutiny.TimeoutException) {
