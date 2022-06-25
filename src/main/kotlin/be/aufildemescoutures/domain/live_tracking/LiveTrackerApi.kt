@@ -1,10 +1,9 @@
-package be.aufildemescoutures.api
+package be.aufildemescoutures.domain.live_tracking
 
 import be.aufildemescoutures.domain.ActionType
 import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.CommentId
 import be.aufildemescoutures.domain.FacebookUser
-import be.aufildemescoutures.domain.live_tracking.LiveTrackingService
-import be.aufildemescoutures.domain.live_tracking.ReviewService
 import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
 import io.smallrye.mutiny.Multi
 import org.jboss.logging.Logger
@@ -16,14 +15,11 @@ import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
 @Path("live")
-class LiveTracker {
+class LiveTrackerApi {
     private var LOG = Logger.getLogger(javaClass)
     @Inject
     @field:Default
     lateinit var liveTrackingService: LiveTrackingService
-    @Inject
-    @field:Default
-    lateinit var reviewService: ReviewService
     @Inject
     @field:Default
     lateinit var validationService: ValidationService
@@ -32,9 +28,10 @@ class LiveTracker {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     fun startLiveTracking(
         @FormParam("video") video: String,
-        @FormParam("liveId") liveId: String
+        @FormParam("liveId") liveId: String,
+        @FormParam("items") itemsCount:Int
     ) : String {
-        liveTrackingService.startTracking(video,liveId)
+        liveTrackingService.startTracking(video,liveId,itemsCount)
         return "Started collection of $video"
     }
 
@@ -53,14 +50,15 @@ class LiveTracker {
     @Path("/comments/validation/stream")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     @RestSseElementType(MediaType.APPLICATION_JSON)
-    fun getStreamToValidate():Multi<Comment> = validationService.streamOfCommentsToValidate()
+    fun getStreamToValidate():Multi<Comment> = validationService.streamOfCommentsPendingValidation()
 
     @GET
-    @Path("/reviews/stream")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    fun getStreamOfItemsToReview(): Multi<Int> = reviewService.trackReviewRequests()
+    @Path("/comments/validation/list")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getCommentsPendingValidation():Collection<Comment> = validationService.allPendingComments()
 
-    @GET
-    @Path("reviews")
-    fun getItemsToReview(): List<Int> = reviewService.catchupWithReviewRequests().sorted()
+    @POST
+    @Path("/comments/validation/{id}")
+    fun commentValidated(@PathParam("id") id: String,@FormParam("action") action:String) = validationService.commentValidated(
+        CommentId(id), action)
 }

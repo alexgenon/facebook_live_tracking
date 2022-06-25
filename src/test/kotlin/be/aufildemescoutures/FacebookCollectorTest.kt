@@ -1,6 +1,6 @@
 package be.aufildemescoutures
 
-import be.aufildemescoutures.api.MockServer
+import be.aufildemescoutures.mock.MockServer
 import be.aufildemescoutures.domain.ActionType
 import be.aufildemescoutures.domain.Comment
 import be.aufildemescoutures.infrastructure.facebook.FacebookCollector
@@ -16,7 +16,6 @@ import java.time.LocalDateTime
 import javax.ws.rs.core.MediaType
 
 @QuarkusTest
-@QuarkusTestResource(FacebookMockExtension::class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class FacebookCollectorTest {
     val comment_stream =MockServer.comment_stream.split("\n")
@@ -33,7 +32,7 @@ class FacebookCollectorTest {
             { assertEquals(5, parsedComment[0].item) },
             { assertEquals(LocalDateTime.parse("2021-12-19T05:38:29+0000", FacebookCollector.facebookDatePattern)
                 , parsedComment[0].timestamp) },
-            { assertEquals("Jeff Bezos", parsedComment[0].user.name) },
+            { assertEquals("%NAME", parsedComment[0].user.name) },
             { assertEquals(ActionType.BUY, parsedComment[0].action) }
         )
         parsedComment = FacebookCollector.fromFacebook(comment_stream[6])
@@ -55,7 +54,7 @@ class FacebookCollectorTest {
             { assert(parsedComment.map(Comment::item).toSet().equals(setOf(4, 2, 39, 11))) },
             { assertEquals(LocalDateTime.parse("2021-12-19T05:38:40+0000", FacebookCollector.facebookDatePattern)
                 , parsedComment[0].timestamp) },
-            { assertEquals("Bill Gates", parsedComment[0].user.name) },
+            { assertEquals("%NAME", parsedComment[0].user.name) },
             { assertEquals(ActionType.REVIEW, parsedComment[0].action) }
         )
     }

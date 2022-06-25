@@ -13,7 +13,6 @@ import javax.enterprise.inject.Default
 import javax.inject.Inject
 
 @QuarkusTest
-@QuarkusTestResource(FacebookMockExtension::class)
 class VideoStreamTest {
     @Inject
     @RestClient
@@ -30,7 +29,7 @@ class VideoStreamTest {
             .collect().asList().await().indefinitely()
         LOG.debug(comments)
         assertAll("Comments retrieval",
-            { assertEquals(7,comments.size)}
+            { assertEquals(351,comments.size)}
         )
     }
 

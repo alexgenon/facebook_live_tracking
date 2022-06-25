@@ -31,9 +31,6 @@ class FacebookCollector {
     private val fields = URLEncoder.encode("from{name,id},created_time,message", "UTF-8")
 
     @Inject
-    lateinit var eventBus: EventBus
-
-    @Inject
     @RestClient
     lateinit var videoStream: VideoStream
 

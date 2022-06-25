@@ -1,5 +1,6 @@
 package be.aufildemescoutures.domain
 
+import be.aufildemescoutures.domain.core.customer.Customer
 import java.time.LocalDateTime
 
 data class Comment(
@@ -10,10 +11,13 @@ data class Comment(
     val fullComment: String,
     val action: ActionType
 ){
-    val id = CommentId(commentId+"#"+item)
+    fun username(): String = user.name
+
+    val id = CommentId(commentId+"_"+item)
 }
 
-data class FacebookUser(val name: String, val id: String) {
+data class FacebookUser(val name: String, val id: String): Customer {
+    override fun fullName() =name
     companion object {
         @JvmStatic
         val NoRecordedUser = FacebookUser("<No user>", "<No user>")

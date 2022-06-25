@@ -1,12 +1,17 @@
 package be.aufildemescoutures
 
-import be.aufildemescoutures.api.MockServer
+import be.aufildemescoutures.mock.MockServer
 import io.muserver.*
 import io.muserver.MuServerBuilder.httpServer
-import io.muserver.handlers.ResourceHandlerBuilder
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager
 import org.jboss.logging.Logger
 
+/*
+First tried to use MuServer to have mock Facebook API during integration testing.
+MuServer supports Server Sent Events compared to WireMockServer.
+But then I also wanted to use the mock in dev mode and it was not possible to instantiate it in dev move
+Thus, I went with a home grown api endpoint to mock FB API (package be.aufildemescoutures.mock.MockServer)
+ */
 class FacebookMockExtension : QuarkusTestResourceLifecycleManager {
     private lateinit var mockServer:MuServer
     private val LOG=Logger.getLogger(javaClass)

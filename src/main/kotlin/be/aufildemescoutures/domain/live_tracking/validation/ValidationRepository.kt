@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped
 class ValidationRepository {
     private val commentsPendingValidation = mutableMapOf<CommentId,Comment>()
     fun newCommentToValidate(comment: Comment):Unit  { commentsPendingValidation[comment.id] = comment }
-    fun commentValidated(commentId: CommentId) {commentsPendingValidation.remove(commentId)}
+    fun removeComment(commentId: CommentId) {commentsPendingValidation.remove(commentId)}
     fun allCommentsPendingValidation()=commentsPendingValidation.values.toList()
+    fun getComment(commentId: CommentId): Comment? = commentsPendingValidation.get(commentId)
 }
