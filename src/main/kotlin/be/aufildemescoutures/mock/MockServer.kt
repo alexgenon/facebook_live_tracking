@@ -2,21 +2,46 @@ package be.aufildemescoutures.mock
 
 import io.quarkus.arc.profile.UnlessBuildProfile
 import io.smallrye.mutiny.Multi
+import io.smallrye.mutiny.Uni
 import org.jboss.logging.Logger
 import java.time.Duration
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 import kotlin.random.Random
 
+/**
+ * I want to use the same mock server for dev and test mode to only have place where the fake comments are generated
+ * Since it is not possible to use QuarkusTestResourceLifecycleManager resources in dev:mode (see https://github.com/quarkusio/quarkus/issues/20037)
+ * Then I had to go with a custom made mock server
+ */
 @ApplicationScoped
 @UnlessBuildProfile("prod")
 @Path("mock")
 class MockServer {
     private var LOG = Logger.getLogger(javaClass)
-    lateinit var multi: Multi<String>
+    private val names =
+        arrayOf("Jeff Bezos", "Bill Gates", "Joe Biden", "Donald Trump", "Elon Musk", "Ada Lovelace", "Pikachu")
 
-    private val names = arrayOf("Jeff Bezos", "Bill Gates", "Joe Biden", "Donald Trump", "Elon Musk", "Ada Lovelace","Pikachu")
+    @Inject
+    lateinit var mockConfiguration: MockConfiguration
+
+    private fun replacePlaceHolders(msg: String): String {
+        val randomUser = Random.nextInt(0, names.size - 1)
+        val randomId = Random.nextLong().toString()
+        return msg.replace("%IDUSER", randomUser.toString())
+            .replace("%NAME", names[randomUser])
+            .replace("%ID", randomId)
+    }
+
+    private fun delaySendingMessage(msg: String): Uni<Any>? {
+        val randomDelay = Duration.ofMillis(
+            mockConfiguration.minMessageDelay
+                    + Random.nextLong(mockConfiguration.maxMessageDelay - mockConfiguration.minMessageDelay)
+        )
+        return Uni.createFrom().nullItem<Any>().onItem().delayIt().by(randomDelay);
+    }
 
     @Path("{video}/live_comments")
     @GET
@@ -29,20 +54,14 @@ class MockServer {
     ): Multi<String> {
         LOG.debug("New call to get comments")
         val split = comment_stream.split("\n")
-        multi = Multi.createFrom().ticks()
-            .every(Duration.ofSeconds(3))
-            .map { tick ->
-                val randomUser = Random.nextInt(0, names.size - 1)
-                split[(tick % (split.size)).toInt()]
-                    .replace("%ID", tick.toString())
-                    .replace("%IDUSER",randomUser.toString())
-                    .replace("%NAME",names[randomUser])
-            }
+        val maxSize:Int = mockConfiguration.totalNumber?:split.size
+        return Multi.createFrom().iterable(split.subList(0,maxSize))
+            .map(this::replacePlaceHolders)
+            .onItem().call(this::delaySendingMessage)
             .map {
-                LOG.debug("About to send $it")
+                LOG.debug("sending $it")
                 it
             }
-        return multi
     }
 
     companion object {
@@ -120,19 +139,17 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:29:19+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:30:55+0000", "message":"Ouiiii canon celui-là, moi aussi coup de cœur"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:31:02+0000", "message":"Je l'ai avec du rose néon celui là, j'adore"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:31:34+0000", "message":"Idem Fanny Choffray 😉"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:31:34+0000", "message":"Idem Albert Einstein 😉"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:31:50+0000", "message":"😜😘❤️"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:35:01+0000", "message":"Je peux mettre que je prends le 27 en attendant de le revoir et de voir le reste ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:35:32+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:36:06+0000", "message":"Bonsoir le 34 est a quel prix svp?"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:36:23+0000", "message":"Ravissante ! Jolie poitrine ❤"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:36:27+0000", "message":"Il est à 42 euros :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:39:46+0000", "message":"Je peux mettre une option sur le 41, le temps de voir le reste ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:40:10+0000", "message":"Oui pas de soucis, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:40:15+0000", "message":"Il n y a qu un 41 ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:41:17+0000", "message":"Envoyez un message privé sur la page, Noémi pourra vous dire si elle peut le refaire ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:42:52+0000", "message":"Je veux bien revoir le 13"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:43:46+0000", "message":"Sublime rousse ! Jolie poitrine ma belle"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:44:47+0000", "message":"C'est le t shirt kibrille qui fait ça 😂"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:44:49+0000", "message":"Je veux bien le 49! 🤗😍"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:45:08+0000", "message":"C'est noté, merci :)"}
@@ -200,7 +217,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:53+0000", "message":"Quelle est la longueur des doubles tours svp?"}
     {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T19:59:03+0000", "message":"Revoir 25 et 30 svp"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:33+0000", "message":"Possible pour le revoir svp?"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:47+0000", "message":"Cela dépend des modèles, n'hésitez pas à venir les essayez en boutique à Champs :D"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:47+0000", "message":"Cela dépend des modèles, n'hésitez pas à venir les essayez en boutique à pétaouchnok :D"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:54+0000", "message":"Je prend également le 25 si c est bien dans les tons beige ou écru ? C est bien le tissu original ? Merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:00:19+0000", "message":"Merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:00:30+0000", "message":"Oui c'est du beige/sable, c'est noté, merci :)"}
@@ -213,7 +230,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:03:27+0000", "message":"C'est du muncky le 74?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:03:33+0000", "message":"Prend 76"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:03:47+0000", "message":"C'est noté, merci :-"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:04:23+0000", "message":"Daniel Kaiser, fait vivre le commerce de ta fille ! Dépense tes sous 🤣🤣"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:04:23+0000", "message":"Piotr, fait vivre le commerce de ta fille ! Dépense tes sous 🤣🤣"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:04:38+0000", "message":"Je prends 73"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:04:46+0000", "message":"Je prends le 76"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:04:55+0000", "message":"C'est noté, merci :)"}
@@ -277,11 +294,11 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:14:43+0000", "message":"Je prends également le 46 si disponible… merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:14:50+0000", "message":"Je peux revoir ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:14:52+0000", "message":"Je prends  le 22"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:07+0000", "message":"Bon Gaëlle LéoDany  craqué aussi, Marion fera bpost 😂😂🤮"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:07+0000", "message":"Bon Gaëlle craqué aussi, Marion fera bpost 😂😂🤮"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:09+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:25+0000", "message":"Option sur le 24"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:39+0000", "message":"C'est noté, merci :)"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:38+0000", "message":"Allez Gaëlle LéoDany craque aussi, Marion fera b post 😂😂😂"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:15:38+0000", "message":"Allez Gaëlle craque aussi, Marion fera b post 😂😂😂"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:16:26+0000", "message":"Je confirme le 27 ☺️"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:16:34+0000", "message":"Si possible, option sur le 10; merci d'avance."}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:16:42+0000", "message":"Ok merci :)"}

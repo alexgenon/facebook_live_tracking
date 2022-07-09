@@ -5,7 +5,7 @@ import be.aufildemescoutures.domain.Comment
 import be.aufildemescoutures.domain.CommentList
 import be.aufildemescoutures.domain.FacebookUser
 import io.smallrye.mutiny.Multi
-import io.vertx.core.eventbus.EventBus
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
@@ -41,7 +41,7 @@ class FacebookCollector {
             .map {
                 val comments = fromFacebook(it)
                 LOG.debug("Comments extracted:\n${comments}")
-                with(commentsWriter) {
+                with(commentsWriter) { //TODO: persist this using Hibernate instead
                     println(comments)
                     flush()
                 }

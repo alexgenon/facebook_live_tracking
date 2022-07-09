@@ -4,8 +4,8 @@ import be.aufildemescoutures.domain.ActionType
 import be.aufildemescoutures.domain.Comment
 
 /**
- * Maps the different action part of the comment to the buses where the event needs to be published
- * Is a kind of routing based on ActionType class
+ * Maps the different types of comment to the buses where the event needs to be published
+ * Is a kind of routing based mostly on ActionType class
  */
 data class LiveEvent(val comment: Comment) {
     companion object {
