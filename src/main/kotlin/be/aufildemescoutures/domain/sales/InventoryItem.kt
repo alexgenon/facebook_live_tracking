@@ -28,5 +28,5 @@ data class InventoryItem(
     }
 
     // Quick and dirty constructor
-    constructor(id: Int) : this(Sku(id, "", 0), 0, 1)
+    constructor(id: Int) : this(Sku(id, "", 0), 1, 1)
 }

@@ -9,7 +9,7 @@ import javax.ws.rs.Path
 class SalesApi {
     @Inject
     @field:Default
-    private lateinit var inventoryService: InventoryService
+    lateinit var inventoryService: InventoryService
 
     @GET
     fun getSales() = inventoryService.currentSalesStatus()

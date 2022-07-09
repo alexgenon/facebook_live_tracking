@@ -37,7 +37,7 @@ class LiveTrackingService {
 
         this.commentStream = facebookCollector
             .collectComments(video)
-            // We get a stream of list of comments, flattening all this
+            // We get a stream of List<Comment>, flattening it
             .flatMap { commentList -> Multi.createFrom().iterable(commentList) }
             .onFailure().transform { error ->
                     LOG.error("Failure during get comment",error)

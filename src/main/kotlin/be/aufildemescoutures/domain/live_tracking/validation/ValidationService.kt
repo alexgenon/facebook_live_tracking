@@ -37,7 +37,7 @@ class ValidationService {
     @ConsumeEvent(LiveEvent.controlBus)
     fun liveStopped(event:String) {
         if(LiveEvent.stopEvent.equals(event)){
-            LOG.info("Live is stopped, sending onComplete event using processor")
+            LOG.info("Live is stopped, sending onComplete event to processor")
             this.processor.onComplete()
         }
     }
