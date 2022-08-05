@@ -27,11 +27,12 @@ class ValidationService {
     @field:Default
     lateinit var validationRepository:ValidationRepository
 
-    @ConsumeEvent(LiveEvent.nonCuratedComments)
+    @ConsumeEvent(LiveEvent.newComment)
     fun newEventToReview(comment: Comment) {
         validationRepository.newCommentToValidate(comment)
         LOG.debug("Comment ${comment.id} will be published as new comment")
-        this.processor.onNext(comment)
+        this.processor.onNext(comment) // will end up as a server sent event via LiveTrackerApi
+        this.commmentBus.publish(LiveEvent.commentToValidate,comment) // will be sent to all WS connections
     }
 
     @ConsumeEvent(LiveEvent.controlBus)

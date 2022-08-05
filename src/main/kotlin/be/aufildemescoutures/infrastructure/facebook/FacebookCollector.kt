@@ -51,7 +51,7 @@ class FacebookCollector {
     }
 
     companion object {
-        val LOG = Logger.getLogger(javaClass)
+        val LOG = Logger.getLogger(FacebookCollector::class.java)
         val facebookDatePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
         val numberPattern = Regex("\\d+")
         val buyKeywords = setOf("prend", "achet", "achèt")

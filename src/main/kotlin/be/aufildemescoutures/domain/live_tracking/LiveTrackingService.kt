@@ -43,9 +43,11 @@ class LiveTrackingService {
                     LOG.error("Failure during get comment",error)
                     RuntimeException(error)
             }
-            .subscribe().with { comment -> eventBus.publish(LiveEvent.nonCuratedComments, comment) }
+            .subscribe().with { comment -> eventBus.publish(LiveEvent.newComment, comment) }
 
     }
+
+    fun getLive() = this.liveId
 
     fun stopTracking(){
         if(this::commentStream.isInitialized) {

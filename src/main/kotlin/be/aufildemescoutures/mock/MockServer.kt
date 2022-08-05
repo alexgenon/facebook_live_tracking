@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType
 import kotlin.random.Random
 
 /**
- * I want to use the same mock server for dev and test mode to only have place where the fake comments are generated
+ * I want to use the same mock server for dev and test mode to only have one place where the fake comments are generated
  * Since it is not possible to use QuarkusTestResourceLifecycleManager resources in dev:mode (see https://github.com/quarkusio/quarkus/issues/20037)
  * Then I had to go with a custom made mock server
  */
@@ -35,7 +35,7 @@ class MockServer {
             .replace("%ID", randomId)
     }
 
-    private fun delaySendingMessage(msg: String): Uni<Any>? {
+    private fun delaySendingMessage(): Uni<Any>? {
         val randomDelay = Duration.ofMillis(
             mockConfiguration.minMessageDelay
                     + Random.nextLong(mockConfiguration.maxMessageDelay - mockConfiguration.minMessageDelay)
@@ -210,12 +210,12 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:12+0000", "message":"Je veux bien revoir le 26 et 27 merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:13+0000", "message":"On vous met sur liste d'attente ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:19+0000", "message":"Je voudrais revoir le 37"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T19:58:22+0000", "message":"Je peux revoir le 41 et 24 ?"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:22+0000", "message":"Je peux revoir le 41 et 24 ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:30+0000", "message":"Bonsoir je veux bien le 65"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:33+0000", "message":"Oui il est disponible ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:52+0000", "message":"On vous met sur liste d'attente ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:53+0000", "message":"Quelle est la longueur des doubles tours svp?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T19:59:03+0000", "message":"Revoir 25 et 30 svp"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},,  "created_time":"2022-03-23T19:59:03+0000", "message":"Revoir 25 et 30 svp"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:33+0000", "message":"Possible pour le revoir svp?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:47+0000", "message":"Cela dépend des modèles, n'hésitez pas à venir les essayez en boutique à pétaouchnok :D"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:54+0000", "message":"Je prend également le 25 si c est bien dans les tons beige ou écru ? C est bien le tissu original ? Merci"}
@@ -237,24 +237,24 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:05:04+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:05:40+0000", "message":"Salut"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:05:47+0000", "message":"Je prends le 80"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:05:54+0000", "message":"Possible de revoir le 78 et le 80?  Merci"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:05:54+0000", "message":"Possible de revoir le 78 et le 80?  Merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:04+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:10+0000", "message":"Je veux bien revoir le 65 pour être sûr"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:13+0000", "message":"Je prends le 81, svp"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:14+0000", "message":"Je veux bien revoir 16 et 74"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:29+0000", "message":"Bonsoir. Est-ce que c'est possible de revoir les 10, 18 et 78 svp?"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:14+0000", "message":"Je veux bien revoir 16 et 74"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:29+0000", "message":"Bonsoir. Est-ce que c'est possible de revoir les 10, 18 et 78 svp?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:31+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:39+0000", "message":"Je veux bien revoir le 19"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:40+0000", "message":"Je veux bien revoir le 33 svp ?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:40+0000", "message":"Peut-on revoir 33 et 46 si disponibles?"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:40+0000", "message":"Peut-on revoir 33 et 46 si disponibles?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:44+0000", "message":"37"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:57+0000", "message":"Je veux bien revoir 58 et 68"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:57+0000", "message":"Je veux bien revoir 58 et 68"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:06:57+0000", "message":"Si maman est d'accord je vais attendre les rescapés😁"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:57+0000", "message":"Possible de revoir le 46 et 47 ? Merci"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:06:57+0000", "message":"Possible de revoir le 46 et 47 ? Merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:07:09+0000", "message":"Le 81, tu sais le refaire ou pas?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:07:14+0000", "message":"Je veux bien  revoir  le 6, 16, 31"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:07:29+0000", "message":"Revoir 27 (pour confirmer ) et 31 stp"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:07:42+0000", "message":"Revoir 37 et 64"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:07:14+0000", "message":"Je veux bien  revoir  le 6, 16, 31"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:07:29+0000", "message":"Revoir 27 (pour confirmer ) et 31 stp"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:07:42+0000", "message":"Revoir 37 et 64"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:07:44+0000", "message":"Non désolée :/"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:07:50+0000", "message":"Je souhaite revoir les tours de cou à 15€"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:08:01+0000", "message":"Bonsoir... petite question ... prévoyez vous de faire un live enfants un de ces jours ?"}
@@ -268,7 +268,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:09:54+0000", "message":"Le 65 svp"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:10:02+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:10:23+0000", "message":"58?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:10:25+0000", "message":"37 et 64"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:10:25+0000", "message":"37 et 64"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:10:29+0000", "message":"Vous le prenez? ou pour revoir? :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:10:38+0000", "message":"On peut revoir le 58?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:10:43+0000", "message":"J'essaie de rester sage... 😅🤣🤣"}
@@ -325,7 +325,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:20:22+0000", "message":"Ça marche! 👍"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:20:31+0000", "message":"Gaëlle il est trop beau ❤️❤️❤️"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:20:39+0000", "message":"Possibilité de revoir le 33 si c’est possible de le refaire par hasard s’il vous plaît ?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:21:17+0000", "message":"J'attends de revoir le 58 et 68 😉"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:21:17+0000", "message":"J'attends de revoir le 58 et 68 😉"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:21:21+0000", "message":"Ça va d'aller 😂"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:22:06+0000", "message":"Il n'est plus disponible :/"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:22:36+0000", "message":"Je confirme les 3 choisis"}
@@ -337,10 +337,10 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:22:56+0000", "message":"Et 64"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:23:00+0000", "message":"Svp 🙏"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:23:07+0000", "message":"Non"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:23:35+0000", "message":"Est-ce que ce serait possible de revoir ensemble le 10 et le 18?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:23:38+0000", "message":"Le 12 41 et un tour de cou 63 je pense"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:23:35+0000", "message":"Est-ce que ce serait possible de revoir ensemble le 10 et le 18?"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:23:38+0000", "message":"Le 12 41 et un tour de cou 63 je pense"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:23:39+0000", "message":"Vous pouvez remontrer les triangles à pompons si il y en a encore svp ?"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:23:41+0000", "message":"Je confirme le 37 et le 64"}
+    {"id":"%ID", "from":{"name":"%NAME", id":"%IDUSER"},,  "created_time":"2022-03-23T20:23:41+0000", "message":"Je confirme le 37 et le 64"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:23:48+0000", "message":"On vous met sur liste d'attente ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:23:57+0000", "message":"Moi, je sais plus mes numéros !!!"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:23:58+0000", "message":"Le 64 svp"}
@@ -349,7 +349,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:24:27+0000", "message":"Est-ce possible de prendre le 27 ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:24:47+0000", "message":"On vous mets sur liste d'attente ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:25:01+0000", "message":"On vous met sur liste d'attente ;)"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:25:10+0000", "message":"Pas 63 mais 72"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:25:10+0000", "message":"Pas 63 mais 72"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:25:13+0000", "message":"Bonsoir et merci pour le live. Ps: ma fille Eloïse adore le pull qui brille"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:25:22+0000", "message":"Ok pour le 65 🤩"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:26:08+0000", "message":"Je prendrai le 24 alors merci"}
@@ -366,7 +366,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:28:51+0000", "message":"Je peux abuser et revoir le 19? Il est vert de chez vert ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:29:02+0000", "message":"J'ai loupé le 48 possible de le remonter svp"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:29:03+0000", "message":"Pourrais-je revoir le 68 svp? S'il est disponible"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:29:07+0000", "message":"12 41 72 parfait"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:29:07+0000", "message":"12 41 72 parfait"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:29:08+0000", "message":"Pour confirmation pourrais-tu remontrer le 76 s’il te plaît ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:29:16+0000", "message":"Je prends le 19"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:29:27+0000", "message":"Est-ce que le 10 a des petites houppes aux extrémités?  Merci"}
@@ -392,9 +392,9 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:35:16+0000", "message":"Oui😄"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:35:31+0000", "message":"D’accord merci"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:36:19+0000", "message":"Je prends le 48 svp"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:36:18+0000", "message":"Il reste le 57 58 61 63"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:36:18+0000", "message":"Il reste le 57 58 61 63"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:36:36+0000", "message":"C'est noté, merci :)"}
-    {"id":"%ID", "from":{"name":"%NAME"id":"%IDUSER"},,  "created_time":"2022-03-23T20:37:03+0000", "message":"Je prends 65 et 30. Et liste d attente si désistement numéro 19 svp"}
+    {"id":"%ID", "from":{"name":"%NAME",id":"%IDUSER"},,  "created_time":"2022-03-23T20:37:03+0000", "message":"Je prends 65 et 30. Et liste d attente si désistement numéro 19 svp"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:37:16+0000", "message":"Je prends le 63"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:37:55+0000", "message":"Super ! :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T20:38:06+0000", "message":"C'est noté, merci :)"}

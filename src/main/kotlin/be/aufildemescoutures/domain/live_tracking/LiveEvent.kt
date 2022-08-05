@@ -3,15 +3,24 @@ package be.aufildemescoutures.domain.live_tracking
 import be.aufildemescoutures.domain.ActionType
 import be.aufildemescoutures.domain.Comment
 
+typealias EventType=String
+
 /**
- * Maps the different types of comment to the buses where the event needs to be published
+ * Models event happening around a Comment
+ * Also used to map the different types of comment to the buses where the event needs to be published
  * Is a kind of routing based mostly on ActionType class
  */
-data class LiveEvent(val comment: Comment) {
+data class LiveEvent(val comment: Comment, val eventType:EventType ) {
     companion object {
+        /*
+        I intend to use those values as annotation arguments for @ConsumeEvent.
+        Thus, I cannot use an enum as I need to do an <enum>.<value>.toString() which is not a compile time constant
+         */
         const val reviewBusName = "COMMENT.REVIEW"
         const val buyBusName = "COMMENT.BUY"
-        const val nonCuratedComments = "COMMENT.NON_CURATED"
+        const val newComment = "COMMENT.NEW"
+        const val commentToValidate = "COMMENT.TO_VALIDATE"
+        const val commentValidated = "COMMENT.VALIDATED"
         const val controlBus = "LIVE.CONTROL"
         const val stopEvent = "STOP"
         fun busesInterestedIn(actionType: ActionType):Collection<String> =

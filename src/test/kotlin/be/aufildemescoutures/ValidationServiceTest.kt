@@ -6,7 +6,6 @@ import be.aufildemescoutures.domain.live_tracking.LiveEvent
 import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
 import be.aufildemescoutures.infrastructure.facebook.FacebookCollector
 import be.aufildemescoutures.infrastructure.facebook.VideoStream
-import io.quarkus.test.common.QuarkusTestResource
 import io.quarkus.test.junit.QuarkusTest
 import io.vertx.mutiny.core.eventbus.EventBus
 import org.jboss.logging.Logger
@@ -33,9 +32,9 @@ class ValidationServiceTest {
     fun testGetCommentsToValidate(){
         MockServer.comment_stream.split("\n")
             .flatMap{FacebookCollector.fromFacebook(it)}
-            .forEach{commmentBus.publish(LiveEvent.nonCuratedComments,it)}
+            .forEach{commmentBus.publish(LiveEvent.newComment,it)}
 
-        commmentBus.publish(LiveEvent.controlBus,LiveEvent.stopEvent)
+        commmentBus.publish(LiveEvent.controlBus,"")
 
         lateinit var commentsList:List<Comment>
         try {
