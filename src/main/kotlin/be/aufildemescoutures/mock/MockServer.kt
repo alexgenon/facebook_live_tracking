@@ -215,7 +215,7 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:33+0000", "message":"Oui il est disponible ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:52+0000", "message":"On vous met sur liste d'attente ;)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:58:53+0000", "message":"Quelle est la longueur des doubles tours svp?"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},,  "created_time":"2022-03-23T19:59:03+0000", "message":"Revoir 25 et 30 svp"}
+    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:03+0000", "message":"Revoir 25 et 30 svp"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:33+0000", "message":"Possible pour le revoir svp?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:47+0000", "message":"Cela dépend des modèles, n'hésitez pas à venir les essayez en boutique à pétaouchnok :D"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:59:54+0000", "message":"Je prend également le 25 si c est bien dans les tons beige ou écru ? C est bien le tissu original ? Merci"}
