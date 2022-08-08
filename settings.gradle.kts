@@ -15,4 +15,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "live_tracker"
+include("react_frontend", "backend", "shared")

@@ -1,3 +1,3 @@
 
-rootProject.name = "test_react"
+rootProject.name = "live_tracker_frontend"
 

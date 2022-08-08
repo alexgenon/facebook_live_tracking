@@ -1,9 +1,12 @@
 #Maven
-target/
+../target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
+
+#Gradle
+.gradle/
 
 # Eclipse
 .project
@@ -39,3 +42,6 @@ nb-configuration.xml
 .env
 /src/main/resources/META-INF/resources/front/elm-stuff/
 /.mvn/wrapper/
+/**/build/
+/react_frontend/.gradle/
+

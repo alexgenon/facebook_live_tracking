@@ -1,5 +1,5 @@
 plugins {
-    kotlin("js") version "1.7.10"
+    kotlin("js") 
 }
 
 group = "be.aufildemescoutures"
@@ -17,14 +17,29 @@ dependencies {
     implementation("org.jetbrains.kotlin-wrappers:kotlin-react-router-dom:6.3.0-pre.332-kotlin-1.6.21")
     implementation("org.jetbrains.kotlin-wrappers:kotlin-redux:4.1.2-pre.332-kotlin-1.6.21")
     implementation("org.jetbrains.kotlin-wrappers:kotlin-react-redux:7.2.6-pre.332-kotlin-1.6.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 }
 
 kotlin {
-    js(IR) {
+  /*  js(IR) {
         binaries.executable()
         browser {
             commonWebpackConfig {
                 cssSupport.enabled = true
+            }
+
+        }
+    }*/
+    target {
+        browser()
+
+        sourceSets {
+            main {
+                dependencies {
+                    implementation(kotlin("stdlib-js"))
+                    implementation(project(":shared"))
+                }
             }
         }
     }
