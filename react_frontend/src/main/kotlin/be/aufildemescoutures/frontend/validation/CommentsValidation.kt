@@ -10,7 +10,7 @@ external interface CommentsToValidateProps : Props {
     var serverConfig: ServerConfig
 }
 
-val CommentsToValidate = FC<CommentsToValidateProps> { props ->
+val CommentsToValidate = FC<CommentsToValidateProps> { _ ->
     div {
       + "Will now try to connect to "
     }
