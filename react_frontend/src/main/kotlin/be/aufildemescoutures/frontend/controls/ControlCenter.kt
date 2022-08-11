@@ -17,6 +17,8 @@ import kotlin.js.json
 
 external interface ControlCenterProps : Props {
     var serverConfig : ServerConfig
+    var serverStatus: ServerStatus
+    var updateStatus: (ServerStatus) -> Unit
 }
 
 data class ServerStatus(val status: ServerStatusEnum, val text: String, val logs: List<String> = emptyList()) {
@@ -33,26 +35,24 @@ enum class ServerStatusEnum { FETCHING, LIVE, NO_LIVE }
 val mainScope = MainScope()
 
 val ControlCenter = FC<ControlCenterProps> { props ->
-
-    var serverStatus by useState(ServerStatus(ServerStatusEnum.FETCHING, "Checking server status"))
     useEffectOnce {
         mainScope.launch {
-            serverStatus = getLiveStatus(props.serverConfig.getFullHttpURL(),serverStatus)
+            props.updateStatus(getLiveStatus(props.serverConfig.getFullHttpURL(),props.serverStatus))
         }
     }
     div {
 
         button {
-            +((if (serverStatus.status == ServerStatusEnum.LIVE) "Stop " else "") + serverStatus.text)
-            disabled = (!serverStatus.connectionActive())
+            +((if (props.serverStatus.status == ServerStatusEnum.LIVE) "Stop " else "") + props.serverStatus.text)
+            disabled = (!props.serverStatus.connectionActive())
             onClick = { _ ->
                 mainScope.launch {
-                    serverStatus = toggleLive(props.serverConfig.getFullHttpURL(), serverStatus)
+                    props.updateStatus(toggleLive(props.serverConfig.getFullHttpURL(), props.serverStatus))
                 }
             }
         }
         ul {
-            serverStatus.logs.map {
+            props.serverStatus.logs.map {
                 li {
                     +it
                 }
