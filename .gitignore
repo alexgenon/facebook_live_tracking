@@ -45,3 +45,4 @@ nb-configuration.xml
 /**/build/
 /react_frontend/.gradle/
 
+/.gradle/
