@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Validation Commentaire</title>
+</head>
+<style>
+    .styled-table {
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        width: 90%;
+    }
+
+    .styled-table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+    }
+
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .styled-table tbody tr:hover {
+        background-color: #ffff99;
+    }
+
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #009879;
+    }
+
+    .styled-table td.correctionBar{
+        width: 100px;
+    }
+
+    .styled-table td.itemNumber{
+        width: 75px;
+    }
+
+    .styled-table tbody tr.treated {
+        display: none;
+    }
+
+</style>
+<script src="/META-INF/resources/validation/validation.js">
+</script>
+
+<script>
+    let validationSource = new EventSource("/live/comments/validation/stream")
+    validationSource.onmessage = newComment
+</script>
+
+<body>
+<h1>Flux de commentaires</h1>
+<button onclick="bulkValidate(10)">Validation 10 suivants</button>
+<table id="validationTable" class="styled-table">
+    <thead>
+    <tr>
+        <td class="correctionBar">Correction</td>
+        <td>Nom</td>
+        <td class="itemNumber">Numéro</td>
+        <td>Action</td>
+        <td>Commentaire complet</td>
+    </tr>
+    </thead>
+    <tbody id="validationBody">
+    </tbody>
+</table>
+</body>
+</html>
