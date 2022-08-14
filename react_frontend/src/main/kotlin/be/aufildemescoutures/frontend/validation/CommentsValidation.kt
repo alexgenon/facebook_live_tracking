@@ -5,6 +5,7 @@ import be.aufildemescoutures.frontend.controls.ServerStatus
 import be.aufildemescoutures.frontend.controls.ServerStatusEnum
 import be.aufildemescoutures.frontend.controls.mainScope
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.launch
 import react.FC
@@ -21,7 +22,7 @@ suspend fun getCommentsPendingValidation(serverConfig: ServerConfig):String{
     val client = HttpClient()
     val response = client.request("${serverConfig.getFullHttpURL()}/live/comments/validation/list")
 
-    return "Here you should see live comments "
+    return "Here you should see live comments : ${response.body<String>()}"
 }
 
 val CommentsToValidate = FC<CommentsToValidateProps> { props ->
@@ -31,6 +32,7 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
             commentsList = getCommentsPendingValidation(props.serverConfig)
         }
         div {+commentsList }
+        div { +"coucou gamin!"}
     } else {
         div {
             +("No live running")

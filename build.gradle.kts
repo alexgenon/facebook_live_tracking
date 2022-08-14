@@ -1,6 +1,7 @@
 allprojects {
     group = "be.aufildemescoutures"
     version = "1.0.0-SNAPSHOT"
+    description = "live_tracker"
 }
 
 plugins {
@@ -12,3 +13,4 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion apply false
 
 }
+

@@ -48,9 +48,6 @@ allOpen {
     annotation("io.quarkus.test.junit.QuarkusTest")
 }
 
-group = "be.aufildemescoutures"
-version = "1.0-SNAPSHOT"
-description = "live_tracker"
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11

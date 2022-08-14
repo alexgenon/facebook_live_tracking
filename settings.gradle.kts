@@ -15,4 +15,5 @@ pluginManagement {
     }
 }
 
-include("react_frontend", "backend", "shared")
+include("react_frontend", "backend")
+include("domain")
