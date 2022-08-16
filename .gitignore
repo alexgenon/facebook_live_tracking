@@ -43,6 +43,6 @@ nb-configuration.xml
 /src/main/resources/META-INF/resources/front/elm-stuff/
 /.mvn/wrapper/
 /**/build/
-/react_frontend/.gradle/
+/jsMain/.gradle/
 
 /.gradle/
