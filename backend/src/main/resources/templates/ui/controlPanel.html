@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Control Panel</title>
+</head>
+<body>
+{#if videoId != null}
+    <form action="/ui/control_panel/stop_live" method="post">
+    Live {videoId} is running
+    <button>Stop Live</button>
+    </form>
+{#else}
+    <form action="/live/" method="post">
+        <div>
+            <input type="text" id="videoId" name="video">
+            <label for="videoId">Facebook Video Id</label>
+        </div>
+        <div>
+            <input type="text" id="liveId" name="liveId" value="{liveId}">
+            <label for="liveId">Live Tracker Live Id</label>
+        </div>
+        <div>
+            <input type="text" id="items" name="items">
+            <label for="items">Taille inventaire</label>
+        </div>
+        <div>
+            <button>Start Live</button>
+        </div>
+    </form>
+{/if}
+</body>
+</html>
