@@ -1,4 +1,4 @@
-import be.aufildemescoutures.domain.ActionType
+import be.aufildemescoutures.domain.core.ActionType
 import csstype.Color
 import csstype.px
 import emotion.react.css

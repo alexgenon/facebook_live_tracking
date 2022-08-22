@@ -18,7 +18,6 @@ external interface AppProps : Props {
 private val App = FC<AppProps> { props ->
     var serverStatusState by useState(ServerStatus(ServerStatusEnum.FETCHING, "Checking server status"))
 
-    console.log("${Clock.System.now()} : Rendering Client")
     div {
 
         h1 { +"Centre de contrôle" }

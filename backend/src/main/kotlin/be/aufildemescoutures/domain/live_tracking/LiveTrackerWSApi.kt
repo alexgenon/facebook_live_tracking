@@ -1,9 +1,7 @@
 package be.aufildemescoutures.domain.live_tracking
 
-import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.core.Comment
 import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jsonMapper
 import io.quarkus.vertx.ConsumeEvent
 import io.vertx.mutiny.core.eventbus.EventBus
 import kotlinx.serialization.decodeFromString

@@ -1,7 +1,7 @@
 package be.aufildemescoutures.domain.live_tracking
 
-import be.aufildemescoutures.domain.ActionType
-import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.core.ActionType
+import be.aufildemescoutures.domain.core.Comment
 
 typealias EventType=String
 /**

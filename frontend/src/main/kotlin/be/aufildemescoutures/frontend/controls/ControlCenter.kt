@@ -45,9 +45,7 @@ val mainScope = MainScope()
 val ControlCenter = FC<ControlCenterProps> { props ->
     var liveControl:LiveControl by useState<LiveControl>(LiveControl())
 
-    console.log("${Clock.System.now()} : Rendering ControlCenter")
     useEffectOnce {
-        console.log("${Clock.System.now()} : Updating Status")
         mainScope.launch {
             props.updateStatus(getLiveStatus(props.serverConfig.getFullHttpURL(),props.serverStatus))
         }
@@ -126,3 +124,4 @@ suspend fun toggleLive(url: String, serverStatus: ServerStatus, liveControl: Liv
         .await()
     return getLiveStatus(url, serverStatus.addLog("$message result ${toggleResponse.status}"))
 }
+

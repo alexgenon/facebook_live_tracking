@@ -1,15 +1,13 @@
-import be.aufildemescoutures.domain.ActionType
-import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.core.ActionType
+import be.aufildemescoutures.domain.core.Comment
 import csstype.*
 import emotion.react.css
 import kotlinx.browser.window
-import kotlinx.datetime.Instant
 import react.FC
 import react.Props
 import react.dom.html.ReactHTML.article
 import react.dom.html.ReactHTML.em
 import react.dom.html.ReactHTML.span
-import react.key
 import react.useState
 
 
@@ -18,6 +16,7 @@ external interface CommentProps : Props {
     var commentValidated: (Comment, ActionType) -> Unit
     var isSelected: Boolean
     var selectComment : () -> Unit
+    var displayAllCommentsForUser: (Comment) -> Unit
 }
 
 
@@ -34,9 +33,9 @@ val CommentComponent = FC<CommentProps> { props ->
             overflow = Overflow.hidden
             borderRadius = 10.px
             boxShadow = BoxShadow(0.px, 5.px, 7.px, (-1).px, rgba(51, 51, 51, 0.23))
-            hover {
-                boxShadow = BoxShadow(0.px, 9.px, 47.px, (11).px, rgba(51, 51, 51, 0.18))
-            }
+                hover {
+                    boxShadow = BoxShadow(0.px, 9.px, 47.px, (11).px, rgba(51, 51, 51, 0.18))
+                }
             if(props.isSelected){
                 backgroundColor = Color("#daebeb")
             }
@@ -57,9 +56,18 @@ val CommentComponent = FC<CommentProps> { props ->
             }
             onClick = { _ ->
                 props.selectComment()
-                window.navigator.clipboard.writeText(comment.username())
+                window.navigator.clipboard.writeText(comment.user.fullName())
             }
-            +comment.username()
+            +comment.user.fullName()
+        }
+        span {
+            +">"
+            css {
+                cursor = Cursor.pointer
+            }
+            onClick = {_ ->
+                props.displayAllCommentsForUser(comment)
+            }
         }
         span {
             css {

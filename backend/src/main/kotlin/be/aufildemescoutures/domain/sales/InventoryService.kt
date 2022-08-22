@@ -1,6 +1,6 @@
 package be.aufildemescoutures.domain.sales
 
-import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.core.Comment
 import be.aufildemescoutures.domain.core.product.Sku
 import be.aufildemescoutures.domain.live_tracking.LiveEvent
 import io.quarkus.vertx.ConsumeEvent

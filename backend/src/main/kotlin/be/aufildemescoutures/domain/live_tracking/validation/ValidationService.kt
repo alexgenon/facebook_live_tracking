@@ -1,9 +1,10 @@
 package be.aufildemescoutures.domain.live_tracking.validation
 
-import be.aufildemescoutures.domain.ActionType
-import be.aufildemescoutures.domain.Comment
-import be.aufildemescoutures.domain.CommentId
-import be.aufildemescoutures.domain.FacebookUser
+import be.aufildemescoutures.domain.core.ActionType
+import be.aufildemescoutures.domain.core.Comment
+import be.aufildemescoutures.domain.core.CommentId
+import be.aufildemescoutures.domain.core.customer.Customer
+import be.aufildemescoutures.domain.customer.CustomerService
 import be.aufildemescoutures.domain.live_tracking.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
 import io.smallrye.mutiny.Multi
@@ -26,40 +27,44 @@ class ValidationService {
 
     @Inject
     @field:Default
-    lateinit var validationRepository:ValidationRepository
+    lateinit var validationRepository: ValidationRepository
+
+    @Inject
+    @field:Default
+    lateinit var customerService: CustomerService
 
     @ConsumeEvent(LiveEvent.newComment)
     fun newEventToReview(comment: Comment) {
-        validationRepository.newCommentToValidate(comment)
         LOG.debug("Comment ${comment.id} will be published as new comment")
+        validationRepository.newCommentToValidate(comment)
         this.processor.onNext(comment) // will end up as a server sent event via LiveTrackerApi
-        this.commmentBus.publish(LiveEvent.commentToValidate,comment) // will be sent to all WS connections
+        this.commmentBus.publish(LiveEvent.commentToValidate, comment) // will be sent to all WS connections
     }
 
     @ConsumeEvent(LiveEvent.controlBus)
-    fun liveStopped(event:String) {
-        if(LiveEvent.stopEvent.equals(event)){
+    fun liveStopped(event: String) {
+        if (LiveEvent.stopEvent.equals(event)) {
             LOG.info("Live is stopped, sending onComplete event to processor")
             this.processor.onComplete()
         }
     }
 
     @ConsumeEvent(LiveEvent.commentValidated)
-    fun commentValidated(comment:Comment){
+    fun commentValidated(comment: Comment) {
         LOG.debug("Comment $comment validated")
         LiveEvent.busesInterestedIn(comment.action)
             .forEach {
                 LOG.debug("Sending to $it $comment")
-                this.commmentBus.publish(it,comment)
+                this.commmentBus.publish(it, comment)
             }
         validationRepository.archiveComment(comment)
     }
 
-    fun commentValidated(commentId:CommentId, action:String) {
+    fun commentValidated(commentId: CommentId, action: String) {
         LOG.debug("Comment $commentId validated with $action")
-        val updatedComment = validationRepository.getComment(commentId)?.copy(action= ActionType.valueOf(action))
+        val updatedComment = validationRepository.getComment(commentId)?.copy(action = ActionType.valueOf(action))
 
-        if(updatedComment!=null){
+        if (updatedComment != null) {
             commentValidated(updatedComment)
         } else {
             val errorMessage = "$commentId is not a recognized comment"
@@ -71,15 +76,15 @@ class ValidationService {
 
     fun allPendingComments() = validationRepository.allCommentsPendingValidation()
 
-    fun streamOfCommentsPendingValidation():Multi<Comment> {
+    fun streamOfCommentsPendingValidation(): Multi<Comment> {
         LOG.info("Call to get the stream of comments pending validation")
-        if(processor.hasSubscriber()){
+        if (processor.hasSubscriber()) {
             /* reset the unicast processor, that will lead to the previous consumer to be shutdown
             TODO: Maybe check what could be done with processor.broadcast()
              */
             LOG.debug("Reset of processor, existing on is $processor")
             processor.onComplete()
-            processor= UnicastProcessor.create<Comment>()
+            processor = UnicastProcessor.create<Comment>()
         }
         validationRepository.allCommentsPendingValidation()
             .forEach {
@@ -89,5 +94,13 @@ class ValidationService {
         return processor
     }
 
-    fun archivedComments(): Map<FacebookUser,List<Comment>> = validationRepository.allArchivedComments()
+    fun archivedComments(): Map<Customer, List<Comment>> = validationRepository.allArchivedComments()
+    fun allCommentsForCustomer(name: String): List<Comment>? {
+        val customer = customerService.findCustomer(name)
+        val comments = customer?.let {
+            (validationRepository.archivedCommentsForCustomer(customer)?: emptyList<Comment>())+
+                    (validationRepository.allCommentsPendingValidation().filter { comment -> comment.user == customer })
+        }
+        return comments
+    }
 }

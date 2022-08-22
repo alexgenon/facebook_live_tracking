@@ -1,7 +1,7 @@
 package be.aufildemescoutures.domain.review
 
-import be.aufildemescoutures.domain.ActionType
-import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.core.ActionType
+import be.aufildemescoutures.domain.core.Comment
 import be.aufildemescoutures.domain.live_tracking.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
 import io.smallrye.mutiny.Multi

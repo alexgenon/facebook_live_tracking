@@ -1,7 +1,7 @@
 package be.aufildemescoutures
 
 import be.aufildemescoutures.mock.MockServer
-import be.aufildemescoutures.domain.Comment
+import be.aufildemescoutures.domain.core.Comment
 import be.aufildemescoutures.domain.live_tracking.LiveEvent
 import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
 import be.aufildemescoutures.infrastructure.facebook.FacebookCollector

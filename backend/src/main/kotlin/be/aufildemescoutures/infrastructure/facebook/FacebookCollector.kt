@@ -1,9 +1,10 @@
 package be.aufildemescoutures.infrastructure.facebook
 
-import be.aufildemescoutures.domain.ActionType
-import be.aufildemescoutures.domain.Comment
-import be.aufildemescoutures.domain.CommentList
-import be.aufildemescoutures.domain.FacebookUser
+import be.aufildemescoutures.domain.core.ActionType
+import be.aufildemescoutures.domain.core.Comment
+import be.aufildemescoutures.domain.core.customer.FacebookUser
+import be.aufildemescoutures.domain.core.customer.CustomerId
+import be.aufildemescoutures.domain.core.customer.NoRecordedUser
 import io.smallrye.mutiny.Multi
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
@@ -13,7 +14,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import java.io.File
-import java.net.URLEncoder
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,7 +32,7 @@ class FacebookCollector {
     @RestClient
     lateinit var videoStream: VideoStream
 
-    fun collectComments(video: String): Multi<CommentList> {
+    fun collectComments(video: String): Multi<List<Comment>> {
         val commentsWriter = File(outputDirectory, "$video.out").printWriter()
         val stream = videoStream
             .getComments(video, this.token, this.fields, this.comment_rate)
@@ -61,16 +61,16 @@ class FacebookCollector {
         private fun containsAny(message: String, keywords: Collection<String>): Boolean =
             keywords.any { message.contains(it, true) }
 
-        fun fromFacebook(data: String): CommentList {
+        fun fromFacebook(data: String): List<Comment> {
             LOG.trace("About to parse $data")
             val jsonObject = Json
                 .parseToJsonElement(data.replace(Regex("^data\\s*:\\s*"), ""))
                 .jsonObject
             val user = jsonObject["from"]?.jsonObject
             val domainUser = (if (user != null) {
-                FacebookUser(user.get("name").toCleanString(), user.get("id").toCleanString())
+                FacebookUser(user["name"].toCleanString(), CustomerId( user["id"].toCleanString()))
             } else {
-                FacebookUser.NoRecordedUser
+                NoRecordedUser
             })
 
             val commentId = jsonObject["id"].toCleanString()
@@ -96,7 +96,7 @@ class FacebookCollector {
                     try {
                         it.toInt()
                     } catch (numberException: NumberFormatException){
-                        LOG.warn("found a numberf that cannot be parsed $it",numberException)
+                        LOG.warn("found a number that cannot be parsed $it",numberException)
                         -1
                     }
                 }
