@@ -7,6 +7,7 @@ import be.aufildemescoutures.domain.core.customer.CustomerId
 import be.aufildemescoutures.domain.core.customer.NoRecordedUser
 import io.smallrye.mutiny.Multi
 import kotlinx.datetime.Instant
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
@@ -40,7 +41,7 @@ class FacebookCollector {
                 val comments = fromFacebook(it)
                 LOG.debug("Comments extracted:\n${comments}")
                 with(commentsWriter) { //TODO: persist this using Hibernate instead
-                    println(comments)
+                    println(Json.encodeToString(comments))
                     flush()
                 }
                 comments

@@ -22,13 +22,13 @@ import kotlin.random.Random
 class MockServer {
     private var LOG = Logger.getLogger(javaClass)
     private val names =
-        arrayOf("Jeff Bezos", "Bill Gates", "Joe Biden", "Donald Trump", "Elon Musk", "Ada Lovelace", "Pikachu","Kathy Perry")
+        arrayOf("Jeff Bezos", "Bill Gates", "Joe Biden", "Donald Trump", "Elon Musk", "Ada Lovelace", "Pikachu","Kathy Perry","Comtesse de la baronne avec un nom long")
 
     @Inject
     lateinit var mockConfiguration: MockConfiguration
 
     private fun replacePlaceHolders(msg: String): String {
-        val randomUser = Random.nextInt(0, names.size - 1)
+        val randomUser = Random.nextInt(0, names.size)
         val randomId = Random.nextLong().toString()
         return msg.replace("%IDUSER", randomUser.toString())
             .replace("%NAME", names[randomUser])

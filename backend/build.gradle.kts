@@ -62,3 +62,14 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 
+tasks {
+    processResources {
+        dependsOn(":frontend:browserWebpack")
+        /*from(project(":frontend").projectDir.resolve("src/main/resources")) {
+            into("static")
+        }*/
+        from(project(":frontend").buildDir.resolve("distributions"))  {
+            into("META-INF/resources")
+        }
+    }
+}

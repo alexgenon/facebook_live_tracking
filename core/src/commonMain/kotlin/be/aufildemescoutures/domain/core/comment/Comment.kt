@@ -18,7 +18,7 @@ data class Comment(
     val id = CommentId(commentId+"_"+item)
 }
 
-enum class ActionType { BUY, REVIEW, QUESTION, NOTHING }
+enum class ActionType { BUY, REVIEW, QUESTION, NOTHING, CONTEST }
 
 @JvmInline
 @kotlinx.serialization.Serializable

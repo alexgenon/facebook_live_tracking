@@ -2,37 +2,38 @@ package be.aufildemescoutures.frontend.controls
 
 import be.aufildemescoutures.domain.core.LiveEvent.LiveControl
 import be.aufildemescoutures.frontend.ServerConfig
+import csstype.em
 import kotlinx.browser.window
-import react.FC
-import react.Props
-import kotlinx.coroutines.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.await
+import kotlinx.coroutines.launch
+import mui.material.*
+import mui.material.styles.TypographyVariant
+import mui.system.responsive
+import mui.system.sx
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLInputElement
 import org.w3c.fetch.RequestInit
+import react.*
+import react.dom.events.FormEvent
 import react.dom.html.InputType
-import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
-import react.dom.html.ReactHTML.input
-import react.dom.html.ReactHTML.label
 import react.dom.html.ReactHTML.li
-import react.dom.html.ReactHTML.span
 import react.dom.html.ReactHTML.ul
-import react.useEffectOnce
-import react.useState
+import react.dom.onChange
 import kotlin.js.Date
 import kotlin.js.json
 
 external interface ControlCenterProps : Props {
-    var serverConfig : ServerConfig
+    var serverConfig: ServerConfig
     var serverStatus: ServerStatus
     var updateStatus: (ServerStatus) -> Unit
 }
 
 data class ServerStatus(val status: ServerStatusEnum, val text: String, val logs: List<String> = emptyList()) {
     fun connectionActive(): Boolean = (status != ServerStatusEnum.FETCHING)
-    fun addLog(text:String) = this.copy(logs = logs + ("${timeAsString()}: $text"))
-    private fun timeAsString():String  {
+    fun addLog(text: String) = this.copy(logs = logs + ("${timeAsString()}: $text"))
+    private fun timeAsString(): String {
         val now = Date()
         return "${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}"
     }
@@ -43,65 +44,106 @@ enum class ServerStatusEnum { FETCHING, LIVE, NO_LIVE }
 val mainScope = MainScope()
 
 val ControlCenter = FC<ControlCenterProps> { props ->
-    var liveControl:LiveControl by useState<LiveControl>(LiveControl())
+    var liveControl: LiveControl by useState<LiveControl>(LiveControl())
 
     useEffectOnce {
         mainScope.launch {
-            props.updateStatus(getLiveStatus(props.serverConfig.getFullHttpURL(),props.serverStatus))
+            props.updateStatus(getLiveStatus(props.serverConfig.getFullHttpURL(), props.serverStatus))
         }
     }
     div {
-        span { +props.serverStatus.text}
-        ControlCenterInput{
-            label = "Live Id"
-            defaultValue = liveControl.liveId
-            active = (props.serverStatus.status == ServerStatusEnum.NO_LIVE)
-            onValueChanged = {liveControl = liveControl.copy(liveId = it); }
+        Typography {
+            variant = TypographyVariant.h2
+            +"Centre de contrôle"
         }
-        ControlCenterInput{
-            label = "Facebook Video ID"
-            defaultValue = liveControl.fbVideoId
-            active = (props.serverStatus.status == ServerStatusEnum.NO_LIVE)
-            onValueChanged = {liveControl = liveControl.copy(fbVideoId = it); }
-        }
-        ControlCenterInput{
-            label = "Taille Inventaire"
-            defaultValue = liveControl.providedInventorySize.toString()
-            specificInputType = InputType.number
-            active = (props.serverStatus.status == ServerStatusEnum.NO_LIVE)
-            onValueChanged = {liveControl = liveControl.copy(providedInventorySize = it.toInt()); }
-        }
-        button {
-            +("${ if(props.serverStatus.status == ServerStatusEnum.LIVE) "Stop" else "Start"} live")
-            disabled = (!props.serverStatus.connectionActive())
-            onClick = { _ ->
-                mainScope.launch {
-                    props.updateStatus(toggleLive(props.serverConfig.getFullHttpURL(), props.serverStatus,liveControl))
+        Grid {
+            sx {
+                marginTop = 1.em
+                marginBottom = 1.em
+                marginLeft = 2.em
+            }
+            TextField {
+                value = props.serverStatus.text
+                label = ReactNode("Status")
+                disabled = true
+            }
+            TextField {
+                label = ReactNode("Live Id")
+                variant = FormControlVariant.outlined
+                defaultValue = liveControl.liveId
+                disabled = (props.serverStatus.status != ServerStatusEnum.NO_LIVE)
+                onChange = { liveControl = liveControl.copy(liveId = eventToInputValue(it)) }
+            }
+            TextField {
+                label = ReactNode("Facebook Video ID")
+                variant = FormControlVariant.outlined
+                defaultValue = liveControl.fbVideoId
+                disabled = (props.serverStatus.status != ServerStatusEnum.NO_LIVE)
+                onChange = { liveControl = liveControl.copy(fbVideoId = eventToInputValue(it)); }
+            }
+            TextField {
+                label = ReactNode("Taille Inventaire")
+                variant = FormControlVariant.outlined
+                defaultValue = liveControl.providedInventorySize.toString()
+                type = InputType.number
+                disabled = (props.serverStatus.status != ServerStatusEnum.NO_LIVE)
+                onChange =
+                    { liveControl = liveControl.copy(providedInventorySize = eventToInputValue(it).toInt()); }
+            }
+
+            Button {
+                +("${if (props.serverStatus.status == ServerStatusEnum.LIVE) "Stop" else "Start"} live")
+                variant = ButtonVariant.contained
+                disabled = (!props.serverStatus.connectionActive())
+                onClick = { _ ->
+                    mainScope.launch {
+                        props.updateStatus(toggleLive(props.serverConfig.getFullHttpURL(),
+                            props.serverStatus,
+                            liveControl))
+                    }
                 }
             }
         }
-        ul {
-            props.serverStatus.logs.map {
-                li {
-                    +it
+        Accordion {
+            sx {
+                marginTop = 1.em
+                marginBottom = 1.em
+                marginLeft = 2.em
+            }
+            AccordionSummary {
+                Typography {
+                    +"Journal des évènements"
+                    variant = TypographyVariant.h3
+                }
+            }
+            AccordionDetails {
+                ul {
+                    props.serverStatus.logs.map {
+                        li {
+                            +it
+                        }
+                    }
                 }
             }
         }
     }
 }
 
+fun eventToInputValue(event: FormEvent<HTMLDivElement>) =
+    (event.target as? HTMLInputElement)?.value ?: "Error Getting value";
+
 const val LIVE_STATUS_ENDPOINT: String = "/live"
-suspend fun getLiveStatus(url: String,serverStatus: ServerStatus): ServerStatus {
+suspend fun getLiveStatus(url: String, serverStatus: ServerStatus): ServerStatus {
     val response = window
         .fetch(url + LIVE_STATUS_ENDPOINT)
         .await()
     return if (response.status == 404.toShort()) {
         val responseText = "No Live started"
-        ServerStatus(ServerStatusEnum.NO_LIVE, responseText,serverStatus.logs)
+        ServerStatus(ServerStatusEnum.NO_LIVE, responseText, serverStatus.logs)
             .addLog(responseText)
     } else {
         val responseText = response.text().await()
-        ServerStatus(ServerStatusEnum.LIVE, responseText,serverStatus.logs)
+        ServerStatus(ServerStatusEnum.LIVE, responseText, serverStatus.logs)
             .addLog(responseText)
     }
 }
@@ -115,7 +157,7 @@ suspend fun toggleLive(url: String, serverStatus: ServerStatus, liveControl: Liv
         method = "POST"
         message = "Request to start live"
     }
-    val toggleResponse= window.fetch(input = url + LIVE_STATUS_ENDPOINT ,
+    val toggleResponse = window.fetch(input = url + LIVE_STATUS_ENDPOINT,
         init = RequestInit(
             method = method,
             body = body,

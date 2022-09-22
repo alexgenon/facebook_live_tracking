@@ -21,6 +21,8 @@ class ValidationService {
     private val LOG = Logger.getLogger(javaClass)
 
     private var processor = UnicastProcessor.create<Comment>()
+    private var contestMode = false
+    private var contestKeyword = ""
 
     @Inject
     lateinit var commmentBus: EventBus;
@@ -34,7 +36,12 @@ class ValidationService {
     lateinit var customerService: CustomerService
 
     @ConsumeEvent(LiveEvent.newComment)
-    fun newEventToReview(comment: Comment) {
+    fun newEventToReview(originalComment: Comment) {
+        val comment = if(contestMode) {
+            originalComment.copy(action = ActionType.CONTEST)
+        } else {
+            originalComment
+        }
         LOG.debug("Comment ${comment.id} will be published as new comment")
         validationRepository.newCommentToValidate(comment)
         this.processor.onNext(comment) // will end up as a server sent event via LiveTrackerApi
@@ -76,24 +83,6 @@ class ValidationService {
 
     fun allPendingComments() = validationRepository.allCommentsPendingValidation()
 
-    fun streamOfCommentsPendingValidation(): Multi<Comment> {
-        LOG.info("Call to get the stream of comments pending validation")
-        if (processor.hasSubscriber()) {
-            /* reset the unicast processor, that will lead to the previous consumer to be shutdown
-            TODO: Maybe check what could be done with processor.broadcast()
-             */
-            LOG.debug("Reset of processor, existing on is $processor")
-            processor.onComplete()
-            processor = UnicastProcessor.create<Comment>()
-        }
-        validationRepository.allCommentsPendingValidation()
-            .forEach {
-                LOG.debug("Comment ${it.id} will be published as a pending validation")
-                processor.onNext(it)
-            }
-        return processor
-    }
-
     fun archivedComments(): Map<Customer, List<Comment>> = validationRepository.allArchivedComments()
     fun allCommentsForCustomer(name: String): List<Comment>? {
         val customer = customerService.findCustomer(name)
@@ -102,5 +91,14 @@ class ValidationService {
                     (validationRepository.allCommentsPendingValidation().filter { comment -> comment.user == customer })
         }
         return comments
+    }
+
+    fun startContestMode(keyword: String) {
+        contestMode = true
+        contestKeyword = keyword
+    }
+
+    fun stopContestMode(){
+        contestMode = false
     }
 }

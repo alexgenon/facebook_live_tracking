@@ -12,6 +12,8 @@ import org.jboss.logging.Logger
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import javax.ws.rs.core.MediaType
 
 @QuarkusTest
@@ -22,6 +24,7 @@ class FacebookCollectorTest {
     val LOG = Logger.getLogger(VideoStream::class.java)
     val video = "1234"
 
+
     @Test
     @Order(1)
     fun testParsingBuy() {
@@ -29,7 +32,7 @@ class FacebookCollectorTest {
         LOG.debug(parsedComment)
         assertAll("Correctly parse a buy comment - prend",
             { assertEquals(5, parsedComment[0].item) },
-            { assertEquals(LocalDateTime.parse("2021-12-19T05:38:29")
+            { assertEquals(LocalDateTime.parse("2021-12-19T05:38:29").toInstant(TimeZone.UTC)
                 , parsedComment[0].timestamp) },
             { assertEquals("%NAME", parsedComment[0].user.fullName()) },
             { assertEquals(ActionType.BUY, parsedComment[0].action) }
@@ -51,7 +54,7 @@ class FacebookCollectorTest {
         assertAll("Correctly parse a review comment",
             { assertEquals(4,parsedComment.size)},
             { assert(parsedComment.map(Comment::item).toSet().equals(setOf(4, 2, 39, 11))) },
-            { assertEquals(LocalDateTime.parse("2021-12-19T05:38:40")
+            { assertEquals(LocalDateTime.parse("2021-12-19T05:38:40").toInstant(TimeZone.UTC)
                 , parsedComment[0].timestamp) },
             { assertEquals("%NAME", parsedComment[0].user.fullName()) },
             { assertEquals(ActionType.REVIEW, parsedComment[0].action) }

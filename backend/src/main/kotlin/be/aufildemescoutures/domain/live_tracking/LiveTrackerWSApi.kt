@@ -52,10 +52,14 @@ class LiveTrackerWSApi {
     }
 
     @OnMessage
-    fun onMessage(message: String) {
+    fun onMessage(message: String, session: Session) {
         LOG.debug("Message received: $message")
         val event = liveEventFromJson(message)
         this.commmentBus.publish(event.eventType,event.comment)
+        sessions
+            .filterNot{ it == session}
+            .forEach { s -> s.asyncRemote.sendObject(liveEventToJson(listOf(event)))
+                { checkForError(s,it)} }
     }
 
     @ConsumeEvent(LiveEvent.commentToValidate)

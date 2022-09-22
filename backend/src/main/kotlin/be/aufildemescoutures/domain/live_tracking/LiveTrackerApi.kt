@@ -48,15 +48,17 @@ class LiveTrackerApi {
     }
 
     @GET
-    @Path("/comments/validation/stream")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    @RestSseElementType(MediaType.APPLICATION_JSON)
-    fun getStreamToValidate():Multi<Comment> = validationService.streamOfCommentsPendingValidation()
-
-    @GET
     @Path("/comments/validation/list")
     @Produces(MediaType.APPLICATION_JSON)
     fun getCommentsPendingValidation():Collection<Comment> = validationService.allPendingComments()
+
+    @POST
+    @Path("/comments/validation/contest/{keyword}")
+    fun startContest(@PathParam("keyword") keyword:String) = validationService.startContestMode(keyword)
+
+    @DELETE
+    @Path("/comments/validation/contest")
+    fun stopContest() = validationService.stopContestMode()
 
     @POST
     @Path("/comments/validation/{id}")
