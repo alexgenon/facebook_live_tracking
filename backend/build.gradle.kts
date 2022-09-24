@@ -21,6 +21,7 @@ repositories {
 
 
 dependencies {
+    implementation("io.quarkus:quarkus-opentelemetry-exporter-otlp")
     implementation(kotlin("stdlib-jdk8"))
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     /*implementation("io.quarkus:quarkus-reactive-pg-client")

@@ -1,7 +1,10 @@
 package be.aufildemescoutures
 
 import io.quarkus.test.junit.QuarkusTest
-import io.restassured.RestAssured.given
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.Then
+import io.restassured.module.kotlin.extensions.When
+import org.hamcrest.CoreMatchers.*
 import org.junit.jupiter.api.Test
 import javax.ws.rs.core.MediaType
 
@@ -10,14 +13,77 @@ import javax.ws.rs.core.MediaType
 class LiveTrackerAPITest {
     @Test
     fun testStartLive(){
-        given()
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .formParam("video","abc")
-            .formParam("liveId","123")
-            .formParam("items","100")
-            .`when`()
-            .post("/live")
-            .then()
-            .statusCode(200)
+        Given {
+            contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                formParam("video","abc")
+                formParam("liveId","123")
+                formParam("items","100")
+        } When {
+            post("/live")
+        } Then {
+            statusCode(200)
+        }
+    }
+
+    @Test
+    fun testCommentValidation(){
+        Given{
+            contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            formParam("video","abc")
+            formParam("liveId","123")
+            formParam("items","100")
+        } When {
+            post("/live")
+        } Then {
+            statusCode(200)
+        }
+        Thread.sleep(1000)
+
+        When {
+            get("/live/comments/validation/list")
+        } Then {
+            statusCode(200)
+            body("fullComment",hasItems( "je prends le 5"))
+            body("item",hasItems(4,2,39,11))
+        }
+    }
+    @Test
+    fun testContestMode(){
+        Given{
+            contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            formParam("video","abc")
+            formParam("liveId","123")
+            formParam("items","100")
+        } When {
+            post("/live")
+        } Then {
+            statusCode(200)
+        }
+        When {
+            post("/live/comments/validation/contest/test")
+        } Then {
+            statusCode(204)
+        }
+        Thread.sleep(1000)
+
+        When {
+            get("/live/comments/validation/list")
+        } Then {
+            statusCode(200)
+            body("action.last()", `is`("CONTEST"))
+        }
+        When {
+            delete("/live/comments/validation/contest")
+        } Then{
+            statusCode(204)
+        }
+        Thread.sleep(1000)
+        When {
+            get("/live/comments/validation/list")
+        } Then {
+            statusCode(200)
+            log().all()
+            body("action.last()", not(`is`("CONTEST")))
+        }
     }
 }
