@@ -1,14 +1,13 @@
 package be.aufildemescoutures.domain.live_tracking.validation
 
-import be.aufildemescoutures.domain.core.ActionType
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.core.CommentId
-import be.aufildemescoutures.domain.core.customer.Customer
 import be.aufildemescoutures.domain.customer.CustomerService
-import be.aufildemescoutures.domain.live_tracking.LiveEvent
+import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.CommentId
+import be.aufildemescoutures.domain.live_tracking.core.comment.Contest
+import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
+import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
-import io.smallrye.mutiny.Multi
-import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor
 import io.vertx.mutiny.core.eventbus.EventBus
 import org.jboss.logging.Logger
 import javax.enterprise.context.ApplicationScoped
@@ -20,9 +19,7 @@ import javax.ws.rs.NotFoundException
 class ValidationService {
     private val LOG = Logger.getLogger(javaClass)
 
-    private var processor = UnicastProcessor.create<Comment>()
-    private var contestMode = false
-    private var contestKeyword = ""
+    private var contest: Contest = Contest.NONE
 
     @Inject
     lateinit var commmentBus: EventBus;
@@ -36,23 +33,23 @@ class ValidationService {
     lateinit var customerService: CustomerService
 
     @ConsumeEvent(LiveEvent.newComment)
-    fun newEventToReview(originalComment: Comment) {
-        val comment = if(contestMode) {
-            originalComment.copy(action = ActionType.CONTEST)
-        } else {
-            originalComment
-        }
+    fun newEventToReview(comment: Comment) {
         LOG.debug("Comment ${comment.id} will be published as new comment")
-        validationRepository.newCommentToValidate(comment)
-        this.processor.onNext(comment) // will end up as a server sent event via LiveTrackerApi
-        this.commmentBus.publish(LiveEvent.commentToValidate, comment) // will be sent to all WS connections
+        if(this.contest != Contest.NONE) {
+            val commentForContest = this.contest.newCommentForContest(comment.copy(action = ActionType.CONTEST))
+            this.commmentBus.publish(LiveEvent.contestComment,
+                LiveEvent.build(commentForContest,LiveEvent.contestComment))
+        } else {
+            validationRepository.newCommentToValidate(comment)
+            // TODO: refactor : Publish LiveEvent instead of Comment
+            this.commmentBus.publish(LiveEvent.commentToValidate, comment)
+        }
     }
 
     @ConsumeEvent(LiveEvent.controlBus)
     fun liveStopped(event: String) {
         if (LiveEvent.stopEvent.equals(event)) {
-            LOG.info("Live is stopped, sending onComplete event to processor")
-            this.processor.onComplete()
+            LOG.info("Live is stopped")
         }
     }
 
@@ -93,12 +90,17 @@ class ValidationService {
         return comments
     }
 
-    fun startContestMode(keyword: String) {
-        contestMode = true
-        contestKeyword = keyword
+    fun startContestMode(keyword: String):Contest {
+        return contestSwitch(Contest(keyword))
     }
 
-    fun stopContestMode(){
-        contestMode = false
+    fun stopContestMode():Contest{
+        return contestSwitch(Contest.NONE)
+    }
+
+    private fun contestSwitch(contest: Contest):Contest{
+        this.contest = contest
+        this.commmentBus.publish(LiveEvent.contestSwitch,LiveEvent.build(this.contest!!,LiveEvent.contestSwitch))
+        return this.contest
     }
 }

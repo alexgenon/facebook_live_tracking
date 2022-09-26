@@ -21,7 +21,6 @@ repositories {
 
 
 dependencies {
-    implementation("io.quarkus:quarkus-opentelemetry-exporter-otlp")
     implementation(kotlin("stdlib-jdk8"))
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     /*implementation("io.quarkus:quarkus-reactive-pg-client")
@@ -35,6 +34,7 @@ dependencies {
     implementation("io.quarkus:quarkus-resteasy-reactive")
     implementation("io.quarkus:quarkus-resteasy-reactive-qute")
     implementation("io.quarkus:quarkus-resteasy-reactive-kotlin-serialization")
+    implementation("io.quarkus:quarkus-opentelemetry-exporter-otlp")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

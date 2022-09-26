@@ -1,19 +1,19 @@
 package be.aufildemescoutures
 
-import be.aufildemescoutures.mock.MockServer
-import be.aufildemescoutures.domain.core.ActionType
-import be.aufildemescoutures.domain.core.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 import be.aufildemescoutures.infrastructure.facebook.FacebookCollector
 import be.aufildemescoutures.infrastructure.facebook.VideoStream
+import be.aufildemescoutures.mock.MockServer
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import org.hamcrest.CoreMatchers
 import org.jboss.logging.Logger
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import javax.ws.rs.core.MediaType
 
 @QuarkusTest

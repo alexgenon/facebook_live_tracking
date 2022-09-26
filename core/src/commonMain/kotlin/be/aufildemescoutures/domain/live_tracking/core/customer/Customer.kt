@@ -1,4 +1,4 @@
-package be.aufildemescoutures.domain.core.customer
+package be.aufildemescoutures.domain.live_tracking.core.customer
 
 import kotlin.jvm.JvmInline
 

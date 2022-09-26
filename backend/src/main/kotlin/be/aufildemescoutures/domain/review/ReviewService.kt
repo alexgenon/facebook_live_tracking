@@ -1,8 +1,8 @@
 package be.aufildemescoutures.domain.review
 
-import be.aufildemescoutures.domain.core.ActionType
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.live_tracking.LiveEvent
+import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor
@@ -20,7 +20,7 @@ class ReviewService {
 
     @ConsumeEvent(LiveEvent.reviewBusName)
     fun newRequest(comment: Comment) {
-        if(comment.action==ActionType.REVIEW) {
+        if(comment.action== ActionType.REVIEW) {
             newToReview(comment)
         } else if(comment.action==ActionType.QUESTION){
             newQuestion(comment)

@@ -1,7 +1,7 @@
 package be.aufildemescoutures.domain.sales
 
-import be.aufildemescoutures.domain.core.customer.Customer
-import be.aufildemescoutures.domain.core.product.Sku
+import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
+import be.aufildemescoutures.domain.live_tracking.core.product.Sku
 
 data class InventoryItem(
     val sku: Sku, val quantity: Int, var itemsLeft: Int,

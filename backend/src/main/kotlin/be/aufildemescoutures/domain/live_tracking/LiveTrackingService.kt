@@ -1,12 +1,12 @@
 package be.aufildemescoutures.domain.live_tracking
 
+import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import be.aufildemescoutures.domain.sales.InventoryService
 import be.aufildemescoutures.infrastructure.facebook.FacebookCollector
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.subscription.Cancellable
 import io.vertx.mutiny.core.eventbus.EventBus
 import org.jboss.logging.Logger
-import java.lang.RuntimeException
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.inject.Default
 import javax.inject.Inject

@@ -1,10 +1,8 @@
-package be.aufildemescoutures.domain.core
+package be.aufildemescoutures.domain.live_tracking.core.comment
 
-import be.aufildemescoutures.domain.core.customer.Customer
-import be.aufildemescoutures.domain.core.customer.CustomerId
+import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
 import kotlinx.datetime.Instant
 import kotlin.jvm.JvmInline
-import kotlin.jvm.JvmStatic
 
 @kotlinx.serialization.Serializable
 data class Comment(

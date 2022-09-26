@@ -1,4 +1,4 @@
-package be.aufildemescoutures.domain.core.LiveEvent
+package be.aufildemescoutures.domain.live_tracking.core.live_event
 
 import kotlinx.datetime.Clock
 

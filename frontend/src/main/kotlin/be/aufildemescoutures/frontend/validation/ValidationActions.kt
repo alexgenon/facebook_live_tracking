@@ -1,10 +1,13 @@
 package be.aufildemescoutures.frontend.validation
 
-import be.aufildemescoutures.domain.core.ActionType
-import be.aufildemescoutures.domain.core.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 import csstype.Cursor
 import csstype.FlexDirection
-import mui.material.*
+import mui.material.Chip
+import mui.material.FormControl
+import mui.material.FormControlMargin
+import mui.material.Size
 import mui.system.sx
 import react.FC
 import react.Props

@@ -1,10 +1,10 @@
 package be.aufildemescoutures.infrastructure.facebook
 
-import be.aufildemescoutures.domain.core.ActionType
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.core.customer.FacebookUser
-import be.aufildemescoutures.domain.core.customer.CustomerId
-import be.aufildemescoutures.domain.core.customer.NoRecordedUser
+import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.customer.CustomerId
+import be.aufildemescoutures.domain.live_tracking.core.customer.FacebookUser
+import be.aufildemescoutures.domain.live_tracking.core.customer.NoRecordedUser
 import io.smallrye.mutiny.Multi
 import kotlinx.datetime.Instant
 import kotlinx.serialization.encodeToString

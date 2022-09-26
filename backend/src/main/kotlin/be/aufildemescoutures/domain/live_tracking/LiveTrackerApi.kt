@@ -1,15 +1,12 @@
 package be.aufildemescoutures.domain.live_tracking
 
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.core.CommentId
-import be.aufildemescoutures.domain.core.customer.FacebookUser
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.CommentId
+import be.aufildemescoutures.domain.live_tracking.core.comment.Contest
 import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
-import io.smallrye.mutiny.Multi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json.Default.encodeToString
 import org.jboss.logging.Logger
-import org.jboss.resteasy.reactive.RestSseElementType
 import javax.enterprise.inject.Default
 import javax.inject.Inject
 import javax.ws.rs.*
@@ -54,7 +51,7 @@ class LiveTrackerApi {
 
     @POST
     @Path("/comments/validation/contest/{keyword}")
-    fun startContest(@PathParam("keyword") keyword:String) = validationService.startContestMode(keyword)
+    fun startContest(@PathParam("keyword") keyword:String): Contest = validationService.startContestMode(keyword)
 
     @DELETE
     @Path("/comments/validation/contest")

@@ -1,13 +1,16 @@
 package be.aufildemescoutures.frontend.validation
 
-import be.aufildemescoutures.domain.core.ActionType
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.live_tracking.LiveEvent
+import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import be.aufildemescoutures.frontend.ServerConfig
 import be.aufildemescoutures.frontend.controls.ServerStatus
 import be.aufildemescoutures.frontend.controls.eventToInputValue
 import be.aufildemescoutures.frontend.controls.mainScope
-import csstype.*
+import csstype.Color
+import csstype.JustifyContent
+import csstype.em
+import csstype.pc
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
@@ -21,7 +24,6 @@ import kotlinx.serialization.json.Json
 import mui.icons.material.HighlightOffOutlined
 import mui.icons.material.UpdateOutlined
 import mui.material.*
-import mui.material.Size
 import mui.material.styles.TypographyVariant
 import mui.system.responsive
 import mui.system.sx
@@ -46,8 +48,8 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
     val newEvent : (events:List<LiveEvent>)->Unit = { events ->
         events.forEach { event ->
             when (event.eventType){
-                LiveEvent.commentToValidate -> updateCommentsList.invoke { prevList -> (prevList + event.comment) }
-                LiveEvent.commentValidated  -> updateCommentsList.invoke { prevList -> prevList.filterNot{ it == event.comment } }
+                LiveEvent.commentToValidate -> updateCommentsList.invoke { prevList -> (prevList + event.comment()) }
+                LiveEvent.commentValidated  -> updateCommentsList.invoke { prevList -> prevList.filterNot{ it == event.comment() } }
                 else -> console.warn("Received unsupported event: $event")
             }
         }
@@ -239,7 +241,7 @@ fun getCommentsPendingValidationJS(serverConfig: ServerConfig, processEvents: (L
 }
 
 fun validateComment(comment: Comment, updatedAction: ActionType, ws: WebSocket?, triggerRemoval: (Comment) -> Unit) {
-    ws?.send(Json.encodeToString(LiveEvent(comment.copy(action = updatedAction), LiveEvent.commentValidated)))
+    ws?.send(Json.encodeToString(LiveEvent.build(comment.copy(action = updatedAction), LiveEvent.commentValidated)))
     if (ws == null) {
         console.warn("No Websocket, cannot send update")
     }

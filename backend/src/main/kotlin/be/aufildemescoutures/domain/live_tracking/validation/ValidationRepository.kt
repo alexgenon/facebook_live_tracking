@@ -1,13 +1,13 @@
 package be.aufildemescoutures.domain.live_tracking.validation
 
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.core.CommentId
-import be.aufildemescoutures.domain.core.customer.Customer
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.CommentId
+import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ValidationRepository {
-    private val commentsPendingValidation = mutableMapOf<CommentId,Comment>()
+    private val commentsPendingValidation = mutableMapOf<CommentId, Comment>()
     private val archivedComments =  mutableMapOf<Customer,MutableList<Comment>>()
     fun newCommentToValidate(comment: Comment):Unit  { commentsPendingValidation[comment.id] = comment }
     fun removeComment(commentId: CommentId) {commentsPendingValidation.remove(commentId)}

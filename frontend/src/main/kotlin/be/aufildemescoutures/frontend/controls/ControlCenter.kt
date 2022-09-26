@@ -1,6 +1,6 @@
 package be.aufildemescoutures.frontend.controls
 
-import be.aufildemescoutures.domain.core.LiveEvent.LiveControl
+import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveControl
 import be.aufildemescoutures.frontend.ServerConfig
 import csstype.em
 import kotlinx.browser.window
@@ -9,7 +9,6 @@ import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import mui.material.*
 import mui.material.styles.TypographyVariant
-import mui.system.responsive
 import mui.system.sx
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement

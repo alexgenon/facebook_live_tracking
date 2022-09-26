@@ -1,8 +1,8 @@
 package be.aufildemescoutures.domain.review
 
-import be.aufildemescoutures.domain.core.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 
-data class Question(val comment:Comment, val answer: String,val status: QuestionStatus){
+data class Question(val comment: Comment, val answer: String, val status: QuestionStatus){
     fun getQuestionText(): String = comment.fullComment
     fun getId()=comment.id.id
     fun getAuthor()=comment.user.fullName()

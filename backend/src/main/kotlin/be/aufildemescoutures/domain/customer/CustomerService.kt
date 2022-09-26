@@ -1,8 +1,8 @@
 package be.aufildemescoutures.domain.customer
 
-import be.aufildemescoutures.domain.core.Comment
-import be.aufildemescoutures.domain.core.customer.Customer
-import be.aufildemescoutures.domain.live_tracking.LiveEvent
+import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
+import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
 import org.jboss.logging.Logger
 import javax.enterprise.context.ApplicationScoped

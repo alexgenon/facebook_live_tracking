@@ -5,6 +5,7 @@ import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import org.hamcrest.CoreMatchers.*
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import javax.ws.rs.core.MediaType
 
@@ -43,6 +44,7 @@ class LiveTrackerAPITest {
             get("/live/comments/validation/list")
         } Then {
             statusCode(200)
+            log().all()
             body("fullComment",hasItems( "je prends le 5"))
             body("item",hasItems(4,2,39,11))
         }
@@ -62,7 +64,7 @@ class LiveTrackerAPITest {
         When {
             post("/live/comments/validation/contest/test")
         } Then {
-            statusCode(204)
+            statusCode(200)
         }
         Thread.sleep(1000)
 
@@ -70,12 +72,12 @@ class LiveTrackerAPITest {
             get("/live/comments/validation/list")
         } Then {
             statusCode(200)
-            body("action.last()", `is`("CONTEST"))
+            body("isEmpty()", `is`(true))
         }
         When {
             delete("/live/comments/validation/contest")
         } Then{
-            statusCode(204)
+            statusCode(200)
         }
         Thread.sleep(1000)
         When {
