@@ -1,0 +1,65 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: opentelemetry-collector
+  name: opentelemetry-collector
+  namespace: myproject
+spec:
+  replicas: 1
+  selector:
+    app: opentelemetry-collector
+    deploymentconfig: opentelemetry-collector
+  template:
+    metadata:
+      labels:
+        app: opentelemetry-collector
+        deploymentconfig: opentelemetry-collector
+    spec:
+      containers:
+        - image: >-
+            otel/opentelemetry-collector@sha256:9be02bda02b7c63988b6520c35c6ec8f289fe51a76a009341f7db8336f2b4389
+          command:
+            - /otelcol
+            - '--config=/etc/otel/otel-collector-config.yaml'
+          imagePullPolicy: Always
+          name: opentelemetry-collector
+          ports:
+            - containerPort: 4317
+              protocol: TCP
+            - containerPort: 1443
+              protocol: TCP
+            - containerPort: 55678
+              protocol: TCP
+            - containerPort: 55679
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/otel
+              name: volume-otel
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: otel-collector-config
+          name: volume-otel
+  test: false
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - opentelemetry-collector
+        from:
+          kind: ImageStreamTag
+          name: 'opentelemetry-collector:latest'
+          namespace: myproject
+        lastTriggeredImage: >-
+          otel/opentelemetry-collector@sha256:9be02bda02b7c63988b6520c35c6ec8f289fe51a76a009341f7db8336f2b4389
+      type: ImageChange

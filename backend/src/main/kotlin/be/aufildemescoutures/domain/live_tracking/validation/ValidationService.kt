@@ -1,10 +1,7 @@
 package be.aufildemescoutures.domain.live_tracking.validation
 
 import be.aufildemescoutures.domain.customer.CustomerService
-import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
-import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
-import be.aufildemescoutures.domain.live_tracking.core.comment.CommentId
-import be.aufildemescoutures.domain.live_tracking.core.comment.Contest
+import be.aufildemescoutures.domain.live_tracking.core.comment.*
 import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
 import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
@@ -19,7 +16,7 @@ import javax.ws.rs.NotFoundException
 class ValidationService {
     private val LOG = Logger.getLogger(javaClass)
 
-    private var contest: Contest = Contest.NONE
+    private var contest: ContestManagement = ContestManagement.NoContest
 
     @Inject
     lateinit var commmentBus: EventBus;
@@ -35,8 +32,9 @@ class ValidationService {
     @ConsumeEvent(LiveEvent.newComment)
     fun newEventToReview(comment: Comment) {
         LOG.debug("Comment ${comment.id} will be published as new comment")
-        if(this.contest != Contest.NONE) {
-            val commentForContest = this.contest.newCommentForContest(comment.copy(action = ActionType.CONTEST))
+        if(this.contest is ContestManagement.Contest) {
+            val contest = this.contest as ContestManagement.Contest
+            val commentForContest = contest.newCommentForContest(comment.copy(action = ActionType.CONTEST))
             this.commmentBus.publish(LiveEvent.contestComment,
                 LiveEvent.build(commentForContest,LiveEvent.contestComment))
         } else {
@@ -90,17 +88,17 @@ class ValidationService {
         return comments
     }
 
-    fun startContestMode(keyword: String):Contest {
-        return contestSwitch(Contest(keyword))
+    fun startContestMode(keyword: String):ContestManagement {
+        return contestSwitch(ContestManagement.Contest(keyword))
     }
 
-    fun stopContestMode():Contest{
-        return contestSwitch(Contest.NONE)
+    fun stopContestMode():ContestManagement{
+        return contestSwitch(ContestManagement.NoContest)
     }
 
-    private fun contestSwitch(contest: Contest):Contest{
+    private fun contestSwitch(contest: ContestManagement):ContestManagement{
         this.contest = contest
-        this.commmentBus.publish(LiveEvent.contestSwitch,LiveEvent.build(this.contest!!,LiveEvent.contestSwitch))
+        this.commmentBus.publish(LiveEvent.contestSwitch,LiveEvent.build(this.contest,LiveEvent.contestSwitch))
         return this.contest
     }
 }

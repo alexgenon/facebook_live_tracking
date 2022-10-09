@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: live-tracker
+  name: live-tracker-monitor
+  namespace: myproject
+spec:
+  endpoints:
+    - interval: 30s
+      targetPort: 8080
+      path: /q/metrics
+      scheme: http
+  selector:
+    matchLabels:
+      app-with-metrics: 'live-tracker'

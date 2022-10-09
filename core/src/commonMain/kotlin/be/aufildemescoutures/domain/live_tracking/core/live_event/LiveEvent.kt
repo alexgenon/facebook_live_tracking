@@ -3,7 +3,7 @@ package be.aufildemescoutures.domain.live_tracking.core.live_event
 import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
 import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 import be.aufildemescoutures.domain.live_tracking.core.comment.CommentForContest
-import be.aufildemescoutures.domain.live_tracking.core.comment.Contest
+import be.aufildemescoutures.domain.live_tracking.core.comment.ContestManagement
 
 typealias EventType=String
 
@@ -14,7 +14,7 @@ class CommentPayload(val comment: Comment): EventPayload
 @kotlinx.serialization.Serializable
 class CommentForContestPayload(val commentForContest: CommentForContest):EventPayload
 @kotlinx.serialization.Serializable
-class ContestPayload(val contest: Contest):EventPayload
+class ContestPayload(val contest: ContestManagement):EventPayload
 
 /**
  * Models event happening during a live
@@ -31,7 +31,7 @@ data class LiveEvent(val payload: EventPayload, val eventType:EventType ) {
         is CommentForContestPayload -> payload.commentForContest
         else -> {throw UnsupportedOperationException("Payload $payload is not a CommentForContest")}
     }
-    fun contest(): Contest = when(payload){
+    fun contest(): ContestManagement = when(payload){
         is ContestPayload -> payload.contest
         else -> {throw UnsupportedOperationException("Payload $payload is not a Contest")}
     }
@@ -63,7 +63,7 @@ data class LiveEvent(val payload: EventPayload, val eventType:EventType ) {
             val payload = when (rawPayload) {
                 is Comment -> CommentPayload(rawPayload)
                 is CommentForContest -> CommentForContestPayload(rawPayload)
-                is Contest -> ContestPayload(rawPayload)
+                is ContestManagement -> ContestPayload(rawPayload)
                 else -> {
                     throw UnsupportedOperationException("Unsupported payload of type ${rawPayload::class.simpleName}: $rawPayload")
                 }

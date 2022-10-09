@@ -2,15 +2,14 @@ package be.aufildemescoutures.frontend.validation
 
 import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
 import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
+import be.aufildemescoutures.domain.live_tracking.core.comment.CommentForContest
+import be.aufildemescoutures.domain.live_tracking.core.comment.ContestManagement
 import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import be.aufildemescoutures.frontend.ServerConfig
 import be.aufildemescoutures.frontend.controls.ServerStatus
 import be.aufildemescoutures.frontend.controls.eventToInputValue
 import be.aufildemescoutures.frontend.controls.mainScope
-import csstype.Color
-import csstype.JustifyContent
-import csstype.em
-import csstype.pc
+import csstype.*
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
@@ -24,6 +23,7 @@ import kotlinx.serialization.json.Json
 import mui.icons.material.HighlightOffOutlined
 import mui.icons.material.UpdateOutlined
 import mui.material.*
+import mui.material.Size
 import mui.material.styles.TypographyVariant
 import mui.system.responsive
 import mui.system.sx
@@ -39,17 +39,26 @@ external interface CommentsToValidateProps : Props {
     var serverStatus: ServerStatus
 }
 
+
 val CommentsToValidate = FC<CommentsToValidateProps> { props ->
     val (commentsList, updateCommentsList) = useState(emptyList<Comment>())
     var webSocket: WebSocket? by useState(null)
     var allCommentsForUser: List<Comment> by useState(emptyList())
     var bulkValidationCount:Int by useState(30)
+    var contest:ContestManagement by useState(ContestManagement.NoContest)
+    val (contestComments,updateContestComments)= useState(emptyList<CommentForContest>())
+    var selectedTab: Int by useState(0)
 
     val newEvent : (events:List<LiveEvent>)->Unit = { events ->
         events.forEach { event ->
             when (event.eventType){
                 LiveEvent.commentToValidate -> updateCommentsList.invoke { prevList -> (prevList + event.comment()) }
                 LiveEvent.commentValidated  -> updateCommentsList.invoke { prevList -> prevList.filterNot{ it == event.comment() } }
+                LiveEvent.contestSwitch -> {
+                    contest = event.contest()
+                    updateContestComments.invoke {_ -> emptyList()}
+                }
+                LiveEvent.contestComment -> updateContestComments.invoke { prevList -> prevList + event.commentForContest()}
                 else -> console.warn("Received unsupported event: $event")
             }
         }
@@ -58,174 +67,175 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
     useEffectOnce {
         webSocket = getCommentsPendingValidationJS(props.serverConfig, newEvent)
     }
-    Typography {
-        variant = TypographyVariant.h2
-        +"${commentsList.size} commentaires à revoir"
+    Box{
+        sx {
+            borderBottom = 1.px
+            borderColor = js("'divider'")
+        }
+        Tabs{
+            value = selectedTab
+            onChange = { _, newTab -> selectedTab = newTab as Int }
+            Tab {
+                label = ReactNode("Commentaires")
+            }
+            Tab{
+                label = ReactNode("Concours")
+                disabled = ( contest == ContestManagement.NoContest)
+            }
+        }
     }
 
-    Stack {
-        direction = responsive(StackDirection.row)
-        spacing = responsive(2)
-        sx {
-            justifyContent = JustifyContent.spaceBetween
-            padding = 3.em
+    if( contest == ContestManagement.NoContest) {
+        Typography {
+            variant = TypographyVariant.h2
+            +"${commentsList.size} commentaires à revoir"
         }
+
         Stack {
-            direction = responsive (StackDirection.column)
+            direction = responsive(StackDirection.row)
             spacing = responsive(2)
-            Box{
-                Button {
-                    +"Valider $bulkValidationCount commentaires"
-                    onClick = { _ ->
-                        commentsList
-                            .take(bulkValidationCount)
-                            .forEach {
-                                validateComment(it, it.action, webSocket)
-                                { comment -> updateCommentsList.invoke { prevList -> prevList.filterNot { it == comment } } }
-                            }
+            sx {
+                justifyContent = JustifyContent.spaceBetween
+                padding = 3.em
+            }
+            Stack {
+                direction = responsive(StackDirection.column)
+                spacing = responsive(2)
+                Box {
+                    Button {
+                        +"Valider $bulkValidationCount commentaires"
+                        onClick = { _ ->
+                            commentsList
+                                .take(bulkValidationCount)
+                                .forEach {
+                                    validateComment(it, it.action, webSocket)
+                                    { comment -> updateCommentsList.invoke { prevList -> prevList.filterNot { it == comment } } }
+                                }
+                        }
+                    }
+                    TextField {
+                        label = ReactNode("Quantité validation en masse")
+                        variant = FormControlVariant.outlined
+                        defaultValue = bulkValidationCount.toString()
+                        type = InputType.number
+                        onChange =
+                            { bulkValidationCount = eventToInputValue(it).toInt() }
                     }
                 }
-                TextField {
-                    label = ReactNode("Quantité validation en masse")
-                    variant = FormControlVariant.outlined
-                    defaultValue = bulkValidationCount.toString()
-                    type = InputType.number
-                    onChange =
-                        { bulkValidationCount = eventToInputValue(it).toInt() }
-                }
-            }
-            TableContainer {
-                component = Paper.create().type
+                TableContainer {
+                    component = Paper.create().type
 
-                Table {
-                    size = Size.small
-                    TableHead {
-                        TableRow {
-                            TableCell {
-                                sx { width = 30.pc }
-                                +"Nom"
+                    Table {
+                        size = Size.small
+                        TableHead {
+                            TableRow {
+                                TableCell {
+                                    sx { width = 30.pc }
+                                    +"Nom"
+                                }
+                                TableCell {
+                                    sx { width = 3.pc }
+                                    +"Hist."
+                                }
+                                TableCell {
+                                    sx { width = 4.pc }
+                                    +"Item"
+                                }
+                                TableCell {
+                                    sx { width = 8.pc }
+                                    +"Action"
+                                }
+                                TableCell {
+                                    +"Commentaire"
+                                }
                             }
-                            TableCell {
-                                sx { width = 3.pc }
-                                +"Hist."
-                            }
-                            TableCell {
-                                sx { width = 4.pc }
-                                +"Item"
-                            }
-                            TableCell {
-                                sx { width = 8.pc }
-                                +"Action"
-                            }
-                            TableCell {
-                                +"Commentaire"
+                        }
+                        TableBody {
+                            commentsList.map { comment ->
+                                TableRow {
+                                    key = comment.id.toString()
+                                    TableCell {
+                                        +comment.user.fullName()
+                                        onClick = { _ -> window.navigator.clipboard.writeText(comment.user.fullName()) }
+                                        sx {
+                                            hover {
+                                                backgroundColor = Color("#b9c78e")
+                                            }
+                                        }
+                                    }
+                                    TableCell {
+                                        UpdateOutlined {
+                                            onClick = { _ ->
+                                                if (allCommentsForUser.isEmpty()
+                                                    || comment.user != allCommentsForUser[1].user
+                                                ) {
+                                                    mainScope.launch {
+                                                        allCommentsForUser =
+                                                            getAllCommentsForUser(props.serverConfig.getFullHttpURL(),
+                                                                comment.user.fullName())
+                                                    }
+                                                } else if (comment.user == allCommentsForUser[1].user) {
+                                                    allCommentsForUser = emptyList()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    TableCell { +comment.item.toString() }
+                                    TableCell {
+                                        ValidationActions {
+                                            inputComment = comment
+                                            commentValidated = { action: ActionType ->
+                                                validateComment(comment, action, webSocket) { comment ->
+                                                    updateCommentsList.invoke { prevList -> prevList.filterNot { it == comment } }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    TableCell { em { +comment.fullComment } }
+                                }
                             }
                         }
                     }
-                    TableBody {
-                        commentsList.map { comment ->
-                            TableRow {
-                                key = comment.id.toString()
-                                TableCell {
-                                    +comment.user.fullName()
-                                    onClick = { _ -> window.navigator.clipboard.writeText(comment.user.fullName()) }
-                                    sx {
-                                        hover {
-                                            backgroundColor = Color("#b9c78e")
-                                        }
-                                    }
+                }
+            }
+            if (!allCommentsForUser.isEmpty()) {
+                Stack {
+                    Stack {
+                        direction = responsive(StackDirection.row)
+                        sx {
+                            justifyContent = JustifyContent.spaceBetween
+                        }
+                        Typography { +allCommentsForUser[0].user.fullName() }
+                        HighlightOffOutlined {
+                            onClick = { _ -> allCommentsForUser = emptyList() }
+                        }
+                    }
+                    direction = responsive(StackDirection.column)
+                    allCommentsForUser.map { comment ->
+                        Card {
+                            CardContent {
+                                Typography {
+                                    asDynamic().color = "text.secondary"
+                                    gutterBottom = true
+                                    +comment.timestamp.toTimeStr()
                                 }
-                                TableCell {
-                                    UpdateOutlined {
-                                        onClick = { _ ->
-                                            if (allCommentsForUser.isEmpty()
-                                                || comment.user != allCommentsForUser[1].user
-                                            ) {
-                                                mainScope.launch {
-                                                    allCommentsForUser =
-                                                        getAllCommentsForUser(props.serverConfig.getFullHttpURL(),
-                                                            comment.user.fullName())
-                                                }
-                                            } else if (comment.user == allCommentsForUser[1].user) {
-                                                allCommentsForUser = emptyList()
-                                            }
-                                        }
-                                    }
+                                Typography {
+                                    +comment.fullComment
                                 }
-                                TableCell { +comment.item.toString() }
-                                TableCell {
-                                    ValidationActions {
-                                        inputComment = comment
-                                        commentValidated = { action:ActionType ->
-                                            validateComment(comment, action, webSocket) { comment ->
-                                                updateCommentsList.invoke { prevList -> prevList.filterNot { it == comment } }
-                                            }
-                                        }
-                                    }
-                                }
-                                TableCell { em { +comment.fullComment } }
                             }
+
                         }
                     }
                 }
             }
         }
-        if (!allCommentsForUser.isEmpty()) {
-            Stack {
-                Stack {
-                    direction = responsive (StackDirection.row)
-                    sx {
-                        justifyContent = JustifyContent.spaceBetween
-                    }
-                    Typography{ + allCommentsForUser[0].user.fullName()}
-                    HighlightOffOutlined {
-                        onClick = { _ -> allCommentsForUser = emptyList()}
-                    }
-                }
-                direction = responsive (StackDirection.column)
-                allCommentsForUser.map { comment ->
-                    Card {
-                        CardContent {
-                            Typography {
-                                asDynamic().color = "text.secondary"
-                                gutterBottom = true
-                                +comment.timestamp.toTimeStr()
-                            }
-                            Typography {
-                                +comment.fullComment
-                            }
-                        }
-
-                    }
-                }
-            }
+    }
+    else {
+        ContestValidation{
+            comments = contestComments
         }
     }
 }
-
-
-/*suspend fun getCommentsPendingValidationKtor(serverConfig: ServerConfig) : Flow<List<Comment>>{
-    val client = HttpClient() {
-        install(WebSockets) {
-            contentConverter = KotlinxWebsocketSerializationConverter(Json)
-        }
-    }
-
-    return flow {
-        client.webSocket(method = HttpMethod.Get,
-            serverConfig.serverUrl,
-            port = serverConfig.port,
-            path = "/live/comments/validation") {
-            while (true) {
-                val receivedMessage = incoming.receive() as? Frame.Text
-                receivedMessage?.let {
-                    val receivedEvents = Json.decodeFromString<List<LiveEvent>>(receivedMessage.readText())
-                    emit(receivedEvents.map { it.comment })
-                }
-            }
-        }
-    }
-}*/
 
 fun Instant.toTimeStr():String {
     fun Int.onTD() = toString().asDynamic().padStart(2,'0')
@@ -262,3 +272,26 @@ suspend fun getAllCommentsForUser(url: String, userName: String): List<Comment> 
         .map { l -> l[0] }
         .sortedBy  (Comment::timestamp)
 }
+
+/*suspend fun getCommentsPendingValidationKtor(serverConfig: ServerConfig) : Flow<List<Comment>>{
+    val client = HttpClient() {
+        install(WebSockets) {
+            contentConverter = KotlinxWebsocketSerializationConverter(Json)
+        }
+    }
+
+    return flow {
+        client.webSocket(method = HttpMethod.Get,
+            serverConfig.serverUrl,
+            port = serverConfig.port,
+            path = "/live/comments/validation") {
+            while (true) {
+                val receivedMessage = incoming.receive() as? Frame.Text
+                receivedMessage?.let {
+                    val receivedEvents = Json.decodeFromString<List<LiveEvent>>(receivedMessage.readText())
+                    emit(receivedEvents.map { it.comment })
+                }
+            }
+        }
+    }
+}*/

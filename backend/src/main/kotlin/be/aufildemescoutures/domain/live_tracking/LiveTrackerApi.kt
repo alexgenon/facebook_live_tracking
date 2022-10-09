@@ -2,7 +2,7 @@ package be.aufildemescoutures.domain.live_tracking
 
 import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 import be.aufildemescoutures.domain.live_tracking.core.comment.CommentId
-import be.aufildemescoutures.domain.live_tracking.core.comment.Contest
+import be.aufildemescoutures.domain.live_tracking.core.comment.ContestManagement
 import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -51,11 +51,11 @@ class LiveTrackerApi {
 
     @POST
     @Path("/comments/validation/contest/{keyword}")
-    fun startContest(@PathParam("keyword") keyword:String): Contest = validationService.startContestMode(keyword)
+    fun startContest(@PathParam("keyword") keyword:String): ContestManagement = validationService.startContestMode(keyword)
 
     @DELETE
     @Path("/comments/validation/contest")
-    fun stopContest() = validationService.stopContestMode()
+    fun stopContest():ContestManagement = validationService.stopContestMode()
 
     @POST
     @Path("/comments/validation/{id}")

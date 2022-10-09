@@ -5,6 +5,7 @@ import be.aufildemescoutures.frontend.controls.ServerStatus
 import be.aufildemescoutures.frontend.controls.ServerStatusEnum
 import be.aufildemescoutures.frontend.validation.CommentsToValidate
 import kotlinx.browser.document
+import kotlinx.browser.window
 import mui.material.Stack
 import mui.material.StackDirection
 import mui.material.styles.ThemeOptions
@@ -53,9 +54,9 @@ fun main() {
     document.body!!.appendChild(container)
 
     val app = App.create {
-        serverConfig = ServerConfig(serverUrl = "localhost",
-            port = 8080,
-            httpProtocol = "http://",
+        serverConfig = ServerConfig(serverUrl = window.location.hostname,
+            port = window.location.port.toInt(),
+            httpProtocol = window.location.protocol,
             wsProtocol = "ws://")
     }
     createRoot(container).render(app)

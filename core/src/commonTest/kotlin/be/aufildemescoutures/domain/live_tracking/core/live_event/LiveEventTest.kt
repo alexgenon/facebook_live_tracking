@@ -3,7 +3,7 @@ package be.aufildemescoutures.domain.live_tracking.core.live_event
 import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
 import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 import be.aufildemescoutures.domain.live_tracking.core.comment.CommentForContest
-import be.aufildemescoutures.domain.live_tracking.core.comment.Contest
+import be.aufildemescoutures.domain.live_tracking.core.comment.ContestManagement
 import be.aufildemescoutures.domain.live_tracking.core.customer.NoRecordedUser
 import kotlinx.datetime.Clock
 import kotlin.test.assertTrue
@@ -20,13 +20,13 @@ class LiveEventTest {
     @Test
     fun testCommentForContestPayload(){
         val c = Comment("123",NoRecordedUser,2, Clock.System.now(),"",ActionType.BUY)
-        val c4c = CommentForContest(c, Contest.NONE,0.3f)
+        val c4c = CommentForContest(c, ContestManagement.Contest("toto"),0.3f)
         val le = LiveEvent.build(c4c,LiveEvent.contestComment)
         assertTrue { le.payload is CommentForContestPayload }
     }
     @Test
     fun testContestPayload(){
-        val c = Contest("coucou")
+        val c = ContestManagement.Contest("coucou")
         val le = LiveEvent.build(c,LiveEvent.contestSwitch)
         assertTrue { le.payload is ContestPayload }
     }

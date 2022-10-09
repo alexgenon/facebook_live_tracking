@@ -46,7 +46,7 @@ class LiveTrackerAPITest {
             statusCode(200)
             log().all()
             body("fullComment",hasItems( "je prends le 5"))
-            body("item",hasItems(4,2,39,11))
+            body("item",hasItems(5))
         }
     }
     @Test
