@@ -38,7 +38,7 @@ data class ServerStatus(val status: ServerStatusEnum, val text: String, val logs
     }
 }
 
-enum class ServerStatusEnum { FETCHING, LIVE, NO_LIVE }
+enum class ServerStatusEnum { FETCHING, LIVE, NO_LIVE,LIVE_CONTEST }
 
 val mainScope = MainScope()
 
@@ -102,6 +102,24 @@ val ControlCenter = FC<ControlCenterProps> { props ->
                     }
                 }
             }
+
+            Button {
+                +"Démarrer concours"
+                variant = ButtonVariant.contained
+                onClick = { _ ->
+                    mainScope.launch {
+                        props.updateStatus(toggleContest(props.serverConfig.getFullHttpURL(),
+                            props.serverStatus,
+                            liveControl))
+                    }
+                }
+            }
+            TextField {
+                label = ReactNode("Mot clé concours")
+                variant = FormControlVariant.outlined
+                onChange =
+                    { liveControl = liveControl.copy(contestKeyword = eventToInputValue(it)); }
+            }
         }
         Accordion {
             sx {
@@ -133,6 +151,7 @@ fun eventToInputValue(event: FormEvent<HTMLDivElement>) =
 
 const val LIVE_STATUS_ENDPOINT: String = "/live"
 suspend fun getLiveStatus(url: String, serverStatus: ServerStatus): ServerStatus {
+    console.log(url)
     val response = window
         .fetch(url + LIVE_STATUS_ENDPOINT)
         .await()
@@ -156,7 +175,8 @@ suspend fun toggleLive(url: String, serverStatus: ServerStatus, liveControl: Liv
         method = "POST"
         message = "Request to start live"
     }
-    val toggleResponse = window.fetch(input = url + LIVE_STATUS_ENDPOINT,
+    val toggleResponse = window.fetch(
+        input = url + LIVE_STATUS_ENDPOINT,
         init = RequestInit(
             method = method,
             body = body,
@@ -165,4 +185,15 @@ suspend fun toggleLive(url: String, serverStatus: ServerStatus, liveControl: Liv
         .await()
     return getLiveStatus(url, serverStatus.addLog("$message result ${toggleResponse.status}"))
 }
+
+const val CONTEST_ENDPOINT = "/live/comments/validation/contest/"
+suspend fun toggleContest(url: String, serverStatus: ServerStatus, liveControl: LiveControl):ServerStatus {
+    val toggleResponse = window.fetch(
+        input = url + CONTEST_ENDPOINT+"?keyword=${liveControl.contestKeyword}",
+        init = RequestInit(method = "POST")
+
+    ).await()
+    return serverStatus.addLog("Contest for ${liveControl.contestKeyword} started: ${toggleResponse.status}")
+}
+
 

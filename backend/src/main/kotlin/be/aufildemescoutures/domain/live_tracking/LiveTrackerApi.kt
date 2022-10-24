@@ -50,8 +50,8 @@ class LiveTrackerApi {
     fun getCommentsPendingValidation():Collection<Comment> = validationService.allPendingComments()
 
     @POST
-    @Path("/comments/validation/contest/{keyword}")
-    fun startContest(@PathParam("keyword") keyword:String): ContestManagement = validationService.startContestMode(keyword)
+    @Path("/comments/validation/contest")
+    fun startContest(@QueryParam("keyword") keyword:String): ContestManagement = validationService.startContestMode(keyword)
 
     @DELETE
     @Path("/comments/validation/contest")

@@ -167,7 +167,7 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                                         UpdateOutlined {
                                             onClick = { _ ->
                                                 if (allCommentsForUser.isEmpty()
-                                                    || comment.user != allCommentsForUser[1].user
+                                                    || comment.user != allCommentsForUser[0].user
                                                 ) {
                                                     mainScope.launch {
                                                         allCommentsForUser =

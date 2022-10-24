@@ -62,7 +62,7 @@ class LiveTrackerAPITest {
             statusCode(200)
         }
         When {
-            post("/live/comments/validation/contest/test")
+            post("/live/comments/validation/contest?keyword=test")
         } Then {
             statusCode(200)
         }
@@ -72,6 +72,7 @@ class LiveTrackerAPITest {
             get("/live/comments/validation/list")
         } Then {
             statusCode(200)
+            log().all()
             body("isEmpty()", `is`(true))
         }
         When {

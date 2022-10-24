@@ -31,7 +31,7 @@ private val App = FC<AppProps> { props ->
     var serverStatusState by useState(ServerStatus(ServerStatusEnum.FETCHING, "Checking server status"))
     var currentTheme by useState(lightTheme)
 
-    ThemeProvider{
+    ThemeProvider {
         theme = currentTheme
 
         Stack {
@@ -52,12 +52,27 @@ private val App = FC<AppProps> { props ->
 fun main() {
     val container = document.createElement("div")
     document.body!!.appendChild(container)
+    val effectiveServerConfig = defineServerConfig()
 
     val app = App.create {
-        serverConfig = ServerConfig(serverUrl = window.location.hostname,
-            port = window.location.port.toInt(),
-            httpProtocol = window.location.protocol,
-            wsProtocol = "ws://")
+        serverConfig = effectiveServerConfig
     }
     createRoot(container).render(app)
+}
+
+private fun defineServerConfig(): ServerConfig {
+    val webPackMode = js("ENV_WEBPACK_MODE")
+    console.log("Webpack mode is $webPackMode")
+    return if ("production".equals(webPackMode, ignoreCase = true)) {
+        ServerConfig(serverUrl = window.location.hostname,
+            port = window.location.port,
+            httpProtocol = window.location.protocol + "//",
+            wsProtocol = "ws://")
+    } else {
+        ServerConfig(serverUrl = "localhost",
+            port = "8080",
+            httpProtocol = "http://",
+            wsProtocol = "ws://"
+        )
+    }
 }

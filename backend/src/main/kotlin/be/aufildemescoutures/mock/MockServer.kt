@@ -22,7 +22,7 @@ import kotlin.random.Random
 class MockServer {
     private var LOG = Logger.getLogger(javaClass)
     private val names =
-        arrayOf("Jeff Bezos", "Bill Gates", "Joe Biden", "Donald Trump", "Elon Musk", "Ada Lovelace", "Pikachu","Kathy Perry","Comtesse de la baronne avec un nom long")
+        arrayOf("Jeff Bezos", "Bill Gates", "Joe Biden", "Donald Trump", "Elon Musk", "Ada Lovelace", "Pikachu","Kathy Perry","Comtesse de la baronne avec un nom long","Jennifer Anniston")
 
     @Inject
     lateinit var mockConfiguration: MockConfiguration
