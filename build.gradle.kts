@@ -16,7 +16,7 @@ publishing{
       repositories {
         maven {
          name = "GitHubPackages"
-          url = "https://maven.pkg.github.com/alexgenon/facebook_live_tracking"
+          url = uri("https://maven.pkg.github.com/alexgenon/facebook_live_tracking")
           credentials {
             username = System.getenv("GITHUB_ACTOR")
             password = System.getenv("GITHUB_TOKEN")
