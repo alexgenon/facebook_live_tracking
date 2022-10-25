@@ -8,3 +8,20 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion apply false
     id("io.quarkus") version quarkusPlatformVersion apply false
 }
+
+
+publishing{
+  if (System.getenv("CI") != null) {
+      repositories {
+        maven {
+         name = "GitHubPackages"
+          url = "https://maven.pkg.github.com/alexgenon/facebook_live_tracking"
+          credentials {
+            username = System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN")
+          }
+       }
+     }
+  }
+}
+
