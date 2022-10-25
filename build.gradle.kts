@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion apply false
     kotlin("plugin.allopen") version kotlinVersion apply false
     id("io.quarkus") version quarkusPlatformVersion apply false
+    `maven-publish`
 }
 
 
