@@ -24,5 +24,13 @@ publishing{
        }
      }
   }
-}
+  
+  publications {
+    register<MavenPublication>("gpr") {
+      groupId = "be.aufildemescoutures"
+      artifactId = "facebook-live-tracker"
+      version = "1.0"
 
+      from(components["java"])
+    }
+  }
