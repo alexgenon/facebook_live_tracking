@@ -12,6 +12,7 @@ plugins {
     kotlin("plugin.allopen")
     kotlin("plugin.serialization")
     id("io.quarkus")
+    `maven-publish`
 }
 
 repositories {
@@ -68,11 +69,31 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 tasks {
     processResources {
         dependsOn(":frontend:browserWebpack")
-        /*from(project(":frontend").projectDir.resolve("src/main/resources")) {
-            into("static")
-        }*/
         from(project(":frontend").buildDir.resolve("distributions"))  {
             into("META-INF/resources")
         }
     }
+}
+
+publishing{
+  if (System.getenv("CI") != null) {
+      repositories {
+        maven {
+         name = "GitHubPackages"
+          url = uri("https://maven.pkg.github.com/alexgenon/facebook_live_tracking")
+          credentials {
+            username = System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN")
+          }
+       }
+     }
+  
+      publications {
+        register<MavenPublication>("gpr") {
+          groupId = "be.aufildemescoutures"
+          artifactId = "facebook-live-tracker"
+          version = "1.0"
+        }
+      }
+  }
 }
