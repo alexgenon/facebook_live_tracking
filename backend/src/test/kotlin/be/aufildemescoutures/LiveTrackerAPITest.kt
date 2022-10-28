@@ -55,7 +55,7 @@ class LiveTrackerAPITest {
         }
     }
     @Test
-    /* TODO: Needs to be reworked - Try to verify that, in contest mode, only new contest proposal are issues
+    /* TODO: Needs to be reworked => add check that, in contest mode, only new contest proposal are issues
     *  */
     fun testContestMode(){
         Given{
