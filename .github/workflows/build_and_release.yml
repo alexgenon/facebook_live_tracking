@@ -27,9 +27,6 @@ jobs:
 
       - name: Build the backend
         run: ./gradlew build
-
-      - name: list files in tmp
-        run: ls -R /tmp/
       
       - name: list files in current dir
         run: ls -R .
