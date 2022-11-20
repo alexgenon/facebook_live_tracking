@@ -1,3 +1,9 @@
+FROM gradle:7.5.1-jdk11 AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN ./gradlew clean build -x :core:jsBrowserTest
+
+
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4
 
 ARG JAVA_PACKAGE=java-11-openjdk-headless
@@ -20,10 +26,10 @@ RUN microdnf install curl ca-certificates ${JAVA_PACKAGE} \
 # Configure the JAVA_OPTIONS, you can add -XshowSettings:vm to also display the heap size.
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 # We make four distinct layers so if there are application changes the library layers can be re-used
-COPY --chown=1001 backend/build/quarkus-app/lib/ /deployments/lib/
-COPY --chown=1001 backend/build/quarkus-app/*.jar /deployments/
-COPY --chown=1001 backend/build/quarkus-app/app/ /deployments/app/
-COPY --chown=1001 backend/build/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --from=build --chown=1001 /home/gradle/src/backend/build/quarkus-app/lib/ /deployments/lib/
+COPY --from=build --chown=1001 /home/gradle/src/backend/build/quarkus-app/*.jar /deployments/
+COPY --from=build --chown=1001 /home/gradle/src/backend/build/quarkus-app/app/ /deployments/app/
+COPY --from=build --chown=1001 /home/gradle/src/backend/build/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080
 USER 1001
