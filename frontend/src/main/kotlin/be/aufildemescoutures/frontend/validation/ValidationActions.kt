@@ -16,7 +16,7 @@ import react.useState
 
 external interface ValidationActionsProps : Props {
     var inputComment: Comment
-    var commentValidated: (ActionType) -> Unit
+    var actionForComment: (ActionType) -> Unit
 }
 
 val ValidationActions = FC<ValidationActionsProps> { props ->
@@ -33,7 +33,7 @@ val ValidationActions = FC<ValidationActionsProps> { props ->
         listOfActions.map { action ->
             Chip {
                 label = ReactNode(action.toString())
-                onClick = { _ -> props.commentValidated(action) }
+                onClick = { _ -> props.actionForComment(action) }
             }
         }
         onMouseOver = { _ -> expanded = true }

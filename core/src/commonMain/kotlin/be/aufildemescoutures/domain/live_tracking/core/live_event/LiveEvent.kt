@@ -17,9 +17,8 @@ class CommentForContestPayload(val commentForContest: CommentForContest):EventPa
 class ContestPayload(val contest: ContestManagement):EventPayload
 
 /**
- * Models event happening during a live
- * Also used to map the different types of comment to the buses where the event needs to be published
- * Is a kind of routing based mostly on ActionType class
+ * Models event happening during a live, payload is the actual content of the event (normal comment,
+ * comment in scope of a contest, or contest 'control' message)
  */
 @kotlinx.serialization.Serializable
 data class LiveEvent(val payload: EventPayload, val eventType:EventType ) {
@@ -40,6 +39,7 @@ data class LiveEvent(val payload: EventPayload, val eventType:EventType ) {
         /*
         I intend to use those values as annotation arguments for @ConsumeEvent.
         Thus, I cannot use an enum as I need to do an <enum>.<value>.toString() which is not a compile-time constant
+        and then is not accepted as an annotation argument
          */
         const val reviewBusName = "COMMENT.REVIEW"
         const val buyBusName  = "COMMENT.BUY"
@@ -50,13 +50,21 @@ data class LiveEvent(val payload: EventPayload, val eventType:EventType ) {
         const val contestSwitch = "CONTEST.SWITCH"
         const val contestComment = "CONTEST.COMMENT"
         const val stopEvent = "STOP"
+
+        /**  This function maps the different types of comment to the buses where the event needs to be published
+         *  (kind of routing based mostly on ActionType class)
+         */
         fun busesInterestedIn(actionType: ActionType):Collection<String> =
-            if(actionType==ActionType.BUY){
-                setOf(buyBusName)
-            } else if(actionType==ActionType.QUESTION || actionType == ActionType.REVIEW) {
-                setOf(reviewBusName)
-            } else{
-                emptySet<String>()
+            when (actionType) {
+                ActionType.BUY -> {
+                    setOf(buyBusName)
+                }
+                ActionType.QUESTION, ActionType.REVIEW -> {
+                    setOf(reviewBusName)
+                }
+                else -> {
+                    emptySet<String>()
+                }
             }
 
         fun build(rawPayload: Any, eventType: EventType):LiveEvent {

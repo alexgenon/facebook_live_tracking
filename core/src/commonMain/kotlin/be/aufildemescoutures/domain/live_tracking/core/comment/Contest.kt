@@ -2,9 +2,11 @@ package be.aufildemescoutures.domain.live_tracking.core.comment
 
 @kotlinx.serialization.Serializable
 sealed class ContestManagement() {
+    abstract override fun toString(): String
 
     @kotlinx.serialization.Serializable
     object NoContest : ContestManagement() {
+        override fun toString()="NoContest"
     }
 
     @kotlinx.serialization.Serializable
@@ -25,6 +27,8 @@ sealed class ContestManagement() {
         companion object {
             private val numberRegex = Regex("\\d+")
         }
+
+        override fun toString() = "Contest(keyword=$keyword)"
     }
 }
 
