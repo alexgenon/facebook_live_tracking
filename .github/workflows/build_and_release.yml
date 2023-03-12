@@ -47,8 +47,8 @@ jobs:
           context: .
           file: backend/src/main/docker/Dockerfile.jvm
           tags: |
-            ghcr.io/alexgenon/live-tracker:${{ github.ref_name }}
-            ghcr.io/alexgenon/live-tracker:latest
+            ghcr.io/alexgenon/facebook-live-tracker:${{ github.ref_name }}
+            ghcr.io/alexgenon/facebook-live-tracker:latest
 
       - name: Build native
         run: ./gradlew build -Dquarkus.package.type=native
@@ -60,5 +60,5 @@ jobs:
           context: .
           file: backend/src/main/docker/Dockerfile.native
           tags: |
-            ghcr.io/alexgenon/live-tracker:native-${{ github.ref_name }}
-            ghcr.io/alexgenon/live-tracker:native-latest
+            ghcr.io/alexgenon/facebook-live-tracker:native-${{ github.ref_name }}
+            ghcr.io/alexgenon/facebook-live-tracker:native-latest
