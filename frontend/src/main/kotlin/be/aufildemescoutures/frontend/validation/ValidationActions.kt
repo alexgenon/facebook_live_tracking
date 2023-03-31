@@ -21,13 +21,8 @@ external interface ValidationActionsProps : Props {
 
 val ValidationActions = FC<ValidationActionsProps> { props ->
     val comment = props.inputComment
-    var expanded: Boolean by useState(false)
-    val listOfActions: List<ActionType> = listOf(comment.action) +
-            if (expanded) {
-                ActionType.values().filterNot { it == comment.action }
-            } else {
-                emptyList()
-            }
+    // listOfActions: reorder the list of actions to first show the inferred action
+    val listOfActions: List<ActionType> = listOf(comment.action) + ActionType.values().filterNot { it == comment.action }
 
     FormControl {
         listOfActions.map { action ->
@@ -36,8 +31,6 @@ val ValidationActions = FC<ValidationActionsProps> { props ->
                 onClick = { _ -> props.actionForComment(action) }
             }
         }
-        onMouseOver = { _ -> expanded = true }
-        onMouseLeave = { _ -> expanded = false }
         margin = FormControlMargin.dense
         size = Size.small
         sx {

@@ -79,23 +79,24 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                     TableHead {
                         TableRow {
                             TableCell {
-                                sx { width = 30.pc }
-                                +"Nom"
-                            }
-                            TableCell {
-                                sx { width = 3.pc }
-                                +"Hist."
+                                sx { width = 8.pc }
+                                +"Action"
                             }
                             TableCell {
                                 sx { width = 4.pc }
                                 +"Item"
                             }
                             TableCell {
-                                sx { width = 8.pc }
-                                +"Action"
+                                sx { width = 30.pc }
+                                +"Nom"
                             }
                             TableCell {
                                 +"Commentaire"
+                            }
+
+                            TableCell {
+                                sx { width = 3.pc }
+                                +"Hist."
                             }
                         }
                     }
@@ -103,6 +104,13 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                         commentsList.map { comment ->
                             TableRow {
                                 key = comment.id.toString()
+                                TableCell {
+                                    ValidationActions {
+                                        inputComment = comment
+                                        actionForComment = { action: ActionType -> commentValidated(comment, action) }
+                                    }
+                                }
+                                TableCell { +comment.item.toString() }
                                 TableCell {
                                     +comment.user.fullName()
                                     onClick = { _ -> window.navigator.clipboard.writeText(comment.user.fullName()) }
@@ -112,6 +120,7 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                                         }
                                     }
                                 }
+                                TableCell { ReactHTML.em { +comment.fullComment } }
                                 TableCell {
                                     UpdateOutlined {
                                         onClick = { _ ->
@@ -129,14 +138,6 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                                         }
                                     }
                                 }
-                                TableCell { +comment.item.toString() }
-                                TableCell {
-                                    ValidationActions {
-                                        inputComment = comment
-                                        actionForComment = { action: ActionType -> commentValidated(comment, action) }
-                                    }
-                                }
-                                TableCell { ReactHTML.em { +comment.fullComment } }
                             }
                         }
                     }

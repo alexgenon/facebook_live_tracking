@@ -1,17 +1,11 @@
 package be.aufildemescoutures
 
 import io.quarkus.test.junit.QuarkusTest
-import io.restassured.common.mapper.TypeRef
-import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
-import jdk.jfr.ContentType
 import org.hamcrest.CoreMatchers.*
-import org.hamcrest.Matchers
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import java.util.LinkedList
 import javax.ws.rs.core.MediaType
 
 
