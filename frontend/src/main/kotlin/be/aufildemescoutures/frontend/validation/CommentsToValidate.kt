@@ -5,10 +5,7 @@ import be.aufildemescoutures.frontend.controls.eventToInputValue
 import be.aufildemescoutures.frontend.controls.mainScope
 import be.aufildemescoutures.frontend.util.toTimeStr
 import be.aufildemescoutures.frontend.validation.ValidationActions
-import csstype.Color
-import csstype.JustifyContent
-import csstype.em
-import csstype.pc
+import csstype.*
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
@@ -17,6 +14,7 @@ import kotlinx.serialization.json.Json
 import mui.icons.material.HighlightOffOutlined
 import mui.icons.material.UpdateOutlined
 import mui.material.*
+import mui.material.Size
 import mui.material.styles.TypographyVariant
 import mui.system.responsive
 import mui.system.sx
@@ -34,6 +32,7 @@ external interface CommentsToValidateProps : Props {
 val CommentsToValidate = FC<CommentsToValidateProps> { props ->
     var allCommentsForUser: List<Comment> by useState(emptyList())
     var bulkValidationCount: Int by useState(30)
+    var selectedComments: List<Comment> by useState(emptyList())
 
     val commentsList = props.comments
     val commentValidated = props.commentValidated
@@ -53,6 +52,13 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
         Stack {
             direction = responsive(StackDirection.column)
             spacing = responsive(2)
+            sx {
+                if(allCommentsForUser.isEmpty()) {
+                    width = 100.pct
+                }else {
+                    width = 60.pct
+                }
+            }
             Box {
                 Button {
                     +"Valider $bulkValidationCount commentaires"
@@ -79,15 +85,15 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                     TableHead {
                         TableRow {
                             TableCell {
-                                sx { width = 8.pc }
+                                sx { width = 13.em }
                                 +"Action"
                             }
                             TableCell {
-                                sx { width = 4.pc }
-                                +"Item"
+                                sx { width = 3.ch }
+                                +"Nb"
                             }
                             TableCell {
-                                sx { width = 30.pc }
+                                sx { width = 35.ch }
                                 +"Nom"
                             }
                             TableCell {
@@ -95,7 +101,7 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                             }
 
                             TableCell {
-                                sx { width = 3.pc }
+                                sx { width = 2.em }
                                 +"Hist."
                             }
                         }
@@ -104,6 +110,16 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                         commentsList.map { comment ->
                             TableRow {
                                 key = comment.id.toString()
+
+                                sx {
+                                    if (selectedComments.contains(comment)) {
+                                        backgroundColor = Color("aliceblue")
+                                    }
+                                    hover {
+                                        backgroundColor = Color("lightblue")
+                                    }
+                                }
+
                                 TableCell {
                                     ValidationActions {
                                         inputComment = comment
@@ -113,11 +129,14 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                                 TableCell { +comment.item.toString() }
                                 TableCell {
                                     +comment.user.fullName()
-                                    onClick = { _ -> window.navigator.clipboard.writeText(comment.user.fullName()) }
+                                    onClick = { _ ->
+                                        window.navigator.clipboard.writeText(comment.user.fullName())
+                                        selectedComments = listOf(comment)
+                                    }
                                     sx {
-                                        hover {
-                                            backgroundColor = Color("#b9c78e")
-                                        }
+                                        maxWidth = 35.ch
+                                        whiteSpace = WhiteSpace.nowrap
+                                        overflow = Overflow.hidden
                                     }
                                 }
                                 TableCell { ReactHTML.em { +comment.fullComment } }
@@ -146,7 +165,10 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
         }
         if (!allCommentsForUser.isEmpty()) {
             Stack {
-                Stack {
+                sx {
+                    width=40.pct
+                }
+                Stack { // Heading Stack
                     direction = responsive(StackDirection.row)
                     sx {
                         justifyContent = JustifyContent.spaceBetween
@@ -169,7 +191,6 @@ val CommentsToValidate = FC<CommentsToValidateProps> { props ->
                                 +comment.fullComment
                             }
                         }
-
                     }
                 }
             }
