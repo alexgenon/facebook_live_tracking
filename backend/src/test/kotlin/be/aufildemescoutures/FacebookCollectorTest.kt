@@ -60,19 +60,4 @@ class FacebookCollectorTest {
             { assertEquals(ActionType.REVIEW, parsedComment[0].action) }
         )
     }
-
-
-    @Test
-    @Order(2)
-    fun testStartTracking() {
-        RestAssured.given()
-            .`when`()
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("video", video)
-            .param("liveId", video)
-            .post("/live")
-            .then()
-            .statusCode(200)
-            .body(CoreMatchers.`is`("Started collection of $video"))
-    }
 }

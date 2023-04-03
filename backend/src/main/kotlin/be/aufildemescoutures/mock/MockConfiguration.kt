@@ -22,7 +22,7 @@ class MockConfigurationProvider {
     @Produces
     @IfBuildProfile("test")
     fun getTestConfig(): MockConfiguration {
-        val mockConfiguration = MockConfiguration(100, 200, 150)
+        val mockConfiguration = MockConfiguration(10, 20, 150)
         LOG.info("Mock Configuration for test mode: $mockConfiguration")
         return mockConfiguration
     }

@@ -43,6 +43,17 @@ class MockServer {
         return Uni.createFrom().nullItem<Any>().onItem().delayIt().by(randomDelay);
     }
 
+    private fun videoTrickLimitMessages(param:String):Int? {
+        val videoTrickRegex = Regex("limit=(\\d+)")
+        val match = videoTrickRegex.find(param)
+        return match?.groupValues?.get(1)?.toInt()
+    }
+
+    /** Mock Facebook live_comments endpoint
+     * The send rate for messages will vary based on MockConfiguration injected (messages are sent faster in test profile)
+     * Also supports a quick and dirty trick, if the video path param is of following format : "limit=<number>" then
+     * <number> messages are sent and connection is closed (to test reconnection)
+     */
     @Path("{video}/live_comments")
     @GET
     @Produces(MediaType.SERVER_SENT_EVENTS)
@@ -52,16 +63,19 @@ class MockServer {
         @QueryParam("fields") fields: String?,
         @QueryParam("comment_rate") commentRate: String?
     ): Multi<String> {
-        LOG.debug("New call to get comments")
         val split = comment_stream.split("\n")
-        val maxSize:Int = mockConfiguration.totalNumber?:split.size
-        return Multi.createFrom().iterable(split.subList(0,maxSize))
+        val videoTrickSize = videoTrickLimitMessages(video)
+        val maxSize:Int = videoTrickSize?:mockConfiguration.totalNumber?:split.size
+        LOG.info("New call to get comments, will send $maxSize comments")
+        val answers:Multi<String> = Multi.createFrom().iterable(split.subList(0, maxSize))
             .map(this::replacePlaceHolders)
             .onItem().call(this::delaySendingMessage)
             .map {
                 LOG.debug("sending $it")
                 it
             }
+
+        return answers.onCompletion().fail()
     }
 
     companion object {

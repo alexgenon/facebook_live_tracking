@@ -1,7 +1,6 @@
 package be.aufildemescoutures.infrastructure.facebook
 
 import io.smallrye.mutiny.Multi
-import kotlinx.coroutines.flow.Flow
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType

@@ -3,12 +3,12 @@ package be.aufildemescoutures
 import be.aufildemescoutures.infrastructure.facebook.VideoStream
 import be.aufildemescoutures.mock.MockConfiguration
 import io.quarkus.test.junit.QuarkusTest
+import io.smallrye.mutiny.helpers.test.AssertSubscriber
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import java.net.URLEncoder
 import javax.inject.Inject
 
@@ -27,14 +27,19 @@ class VideoStreamTest {
     lateinit var mockConfiguration: MockConfiguration
 
     @Test
-    @Disabled // Need to figure out why sometimes the last message was not counted
     fun testVideoStream(){
         val comments = videoStream.getComments("1234", "5678",fields,comment_rate)
-            .collect().asList().await().indefinitely()
-        LOG.debug(comments)
+        val subscriber = comments
+            .subscribe()
+            .withSubscriber(AssertSubscriber.create((mockConfiguration.totalNumber?:0).toLong()))
+
+        val result = subscriber
+            .awaitCompletion()
+            .assertCompleted()
+            .items
+
         assertAll("Comments retrieval",
-            { assertEquals(mockConfiguration.totalNumber,comments.size)}
+            { assertEquals(mockConfiguration.totalNumber,result.size)}
         )
     }
-
 }

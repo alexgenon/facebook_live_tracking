@@ -15,6 +15,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import java.io.File
+import java.time.Duration
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,6 +38,9 @@ class FacebookCollector {
         val commentsWriter = File(outputDirectory, "$video.out").printWriter()
         val stream = videoStream
             .getComments(video, this.token, this.fields, this.comment_rate)
+            .onFailure()
+            .retry()
+            .atMost(10)
             .map {
                 val comments = fromFacebook(it)
                 LOG.debug("Comments extracted:\n${comments}")
@@ -89,7 +93,7 @@ class FacebookCollector {
                 .map{it.value}
                 .toList()
 
-            if(comments.size<=0){
+            if(comments.isEmpty()){
                 comments = listOf("-1")
             }
 
