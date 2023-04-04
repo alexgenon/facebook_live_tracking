@@ -70,12 +70,13 @@ class MockServer {
         val answers:Multi<String> = Multi.createFrom().iterable(split.subList(0, maxSize))
             .map(this::replacePlaceHolders)
             .onItem().call(this::delaySendingMessage)
+            .log()
             .map {
                 LOG.debug("sending $it")
                 it
             }
 
-        return answers.onCompletion().fail()
+        return answers
     }
 
     companion object {
