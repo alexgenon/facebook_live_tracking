@@ -27,12 +27,11 @@ class MockServer {
     @Inject
     lateinit var mockConfiguration: MockConfiguration
 
-    private fun replacePlaceHolders(msg: String): String {
+    private fun replacePlaceHolders(msg: Pair<Int,String>): String {
         val randomUser = Random.nextInt(0, names.size)
-        val randomId = Random.nextLong().toString()
-        return msg.replace("%IDUSER", randomUser.toString())
+        return msg.second.replace("%IDUSER", randomUser.toString())
             .replace("%NAME", names[randomUser])
-            .replace("%ID", randomId)
+            .replace("%ID", msg.first.toString())
     }
 
     private fun delaySendingMessage(): Uni<Any>? {
@@ -67,7 +66,11 @@ class MockServer {
         val videoTrickSize = videoTrickLimitMessages(video)
         val maxSize:Int = videoTrickSize?:mockConfiguration.totalNumber?:split.size
         LOG.info("New call to get comments, will send $maxSize comments")
-        val answers:Multi<String> = Multi.createFrom().iterable(split.subList(0, maxSize))
+        val answers:Multi<String> = Multi.createFrom()
+            .iterable(split
+                .subList(0, maxSize)
+                .mapIndexed { index, s -> Pair(index,s) }
+            )
             .map(this::replacePlaceHolders)
             .onItem().call(this::delaySendingMessage)
             .log()
