@@ -73,7 +73,8 @@ class MockServer {
             )
             .map(this::replacePlaceHolders)
             .onItem().call(this::delaySendingMessage)
-            .log()
+            .onOverflow().invoke { item -> LOG.error("Dropping $item on MockServer")}
+            .drop()
             .map {
                 LOG.debug("sending $it")
                 it
@@ -183,7 +184,6 @@ class MockServer {
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:50:16+0000", "message":"C'est noté, merci :)"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:50:50+0000", "message":"Bonsoir , je prends le 54 si toujours dispo ?"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:51:10+0000", "message":"C'est noté, merci :)"}
-    {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:51:26+0000", "message":"Jolie poitrine mmm😋😋😍"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:51:31+0000", "message":"Merci 🙏🏻"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:52:16+0000", "message":"Quel succès  😂😂"}
     {"id":"%ID", "from":{"name":"%NAME", "id":"%IDUSER"},  "created_time":"2022-03-23T19:52:17+0000", "message":"Je prends le mauve , svp"}

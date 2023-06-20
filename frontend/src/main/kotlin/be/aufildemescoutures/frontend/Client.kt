@@ -76,10 +76,15 @@ private fun defineServerConfig(): ServerConfig {
     val webPackMode = js("ENV_WEBPACK_MODE")
     console.log("Webpack mode is $webPackMode")
     return if ("production".equals(webPackMode as? String, ignoreCase = true)) {
+        val wsProtocol = if("https" == window.location.protocol){
+            "wss://"
+        } else {
+            "ws://"
+        }
         ServerConfig(serverUrl = window.location.hostname,
             port = window.location.port,
             httpProtocol = window.location.protocol + "//",
-            wsProtocol = "ws://")
+            wsProtocol = wsProtocol)
     } else {
         ServerConfig(serverUrl = "localhost",
             port = "8080",
