@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  live-tracker
+  namespace: default
+  labels:
+    app:  live-tracker
+spec:
+  selector:
+    matchLabels:
+      app: live-tracker
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  live-tracker
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name:  live-tracker
+        image: ghcr.io/alexgenon/facebook-live-tracker:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        env:
+        - name: FACEBOOK_PAGE_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: fb-pat
+              key: facebook.page_access_token
+
+        ports:
+        - containerPort:  8080
+          name:  live-tracker
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Brussels
+      restartPolicy: Always
