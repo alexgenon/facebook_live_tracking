@@ -6,7 +6,7 @@ import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import org.hamcrest.CoreMatchers.*
 import org.junit.jupiter.api.Test
-import javax.ws.rs.core.MediaType
+import jakarta.ws.rs.core.MediaType
 
 
 @QuarkusTest

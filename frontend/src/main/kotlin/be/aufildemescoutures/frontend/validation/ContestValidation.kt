@@ -2,7 +2,7 @@ package be.aufildemescoutures.frontend.validation
 
 import be.aufildemescoutures.domain.live_tracking.core.comment.CommentForContest
 import be.aufildemescoutures.frontend.util.toTimeStr
-import csstype.Color
+import web.cssom.Color
 import mui.material.ListItem
 import mui.material.Typography
 import mui.material.styles.TypographyVariant

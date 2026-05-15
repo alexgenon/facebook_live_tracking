@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew -q frontend:tasks)",
+      "Bash(./gradlew -q frontend:help)",
+      "Bash(./gradlew frontend:tasks)",
+      "Bash(./gradlew help *)"
+    ]
+  }
+}

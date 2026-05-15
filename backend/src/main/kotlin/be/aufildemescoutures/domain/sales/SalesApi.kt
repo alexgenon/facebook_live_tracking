@@ -1,9 +1,9 @@
 package be.aufildemescoutures.domain.sales
 
-import javax.enterprise.inject.Default
-import javax.inject.Inject
-import javax.ws.rs.GET
-import javax.ws.rs.Path
+import jakarta.enterprise.inject.Default
+import jakarta.inject.Inject
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
 
 @Path("sales")
 class SalesApi {

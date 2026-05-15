@@ -7,10 +7,10 @@ import be.aufildemescoutures.domain.live_tracking.validation.ValidationService
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jboss.logging.Logger
-import javax.enterprise.inject.Default
-import javax.inject.Inject
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import jakarta.enterprise.inject.Default
+import jakarta.inject.Inject
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
 
 @Path("live")
 class LiveTrackerApi {

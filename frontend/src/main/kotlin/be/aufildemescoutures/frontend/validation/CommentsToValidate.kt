@@ -5,7 +5,7 @@ import be.aufildemescoutures.frontend.controls.eventToInputValue
 import be.aufildemescoutures.frontend.controls.mainScope
 import be.aufildemescoutures.frontend.util.toTimeStr
 import be.aufildemescoutures.frontend.validation.ValidationActions
-import csstype.*
+import web.cssom.*
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
@@ -19,7 +19,7 @@ import mui.material.styles.TypographyVariant
 import mui.system.responsive
 import mui.system.sx
 import react.*
-import react.dom.html.InputType
+import web.html.InputType
 import react.dom.html.ReactHTML
 import react.dom.onChange
 

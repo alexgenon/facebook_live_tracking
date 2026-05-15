@@ -14,7 +14,7 @@ import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import java.net.URLEncoder
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @QuarkusTest
 class VideoStreamTest {

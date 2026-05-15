@@ -14,7 +14,7 @@ import org.hamcrest.CoreMatchers
 import org.jboss.logging.Logger
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import javax.ws.rs.core.MediaType
+import jakarta.ws.rs.core.MediaType
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)

@@ -1,7 +1,7 @@
 package be.aufildemescoutures.domain.customer
 
 import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
-import javax.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class CustomerRepository {

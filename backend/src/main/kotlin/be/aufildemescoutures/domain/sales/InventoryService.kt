@@ -5,7 +5,7 @@ import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import be.aufildemescoutures.domain.live_tracking.core.product.Sku
 import io.quarkus.vertx.ConsumeEvent
 import org.jboss.logging.Logger
-import javax.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.ApplicationScoped
 
 typealias Inventory = Map<Int, InventoryItem>
 

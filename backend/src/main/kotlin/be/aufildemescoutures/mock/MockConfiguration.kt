@@ -3,8 +3,8 @@ package be.aufildemescoutures.mock
 import io.quarkus.arc.DefaultBean
 import io.quarkus.arc.profile.IfBuildProfile
 import org.jboss.logging.Logger
-import javax.enterprise.context.Dependent
-import javax.enterprise.inject.Produces
+import jakarta.enterprise.context.Dependent
+import jakarta.enterprise.inject.Produces
 
 data class MockConfiguration(val minMessageDelay: Long, val maxMessageDelay: Long, val totalNumber: Int?)
 

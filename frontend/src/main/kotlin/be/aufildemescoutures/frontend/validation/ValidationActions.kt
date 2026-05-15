@@ -2,7 +2,7 @@ package be.aufildemescoutures.frontend.validation
 
 import be.aufildemescoutures.domain.live_tracking.core.comment.ActionType
 import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
-import csstype.pct
+import web.cssom.pct
 import mui.icons.material.DoneOutline
 import mui.material.*
 import mui.system.responsive
@@ -24,7 +24,7 @@ val ValidationActions = FC<ValidationActionsProps> { props ->
         Autocomplete<AutocompleteProps<ActionType>> {
             options = ActionType.values()
             value = comment.action
-            size = Size.small
+            size = "small"
             getOptionLabel = { it.toString() }
             autoSelect = true
             onChange = { _, actionDyn, _, _ ->

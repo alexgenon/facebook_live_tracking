@@ -69,7 +69,7 @@ fun main() {
     val app = App.create {
         serverConfig = effectiveServerConfig
     }
-    createRoot(container).render(app)
+    createRoot(container.unsafeCast<web.dom.Element>()).render(app)
 }
 
 private fun defineServerConfig(): ServerConfig {

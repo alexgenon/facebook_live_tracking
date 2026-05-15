@@ -3,7 +3,7 @@ package be.aufildemescoutures.domain.live_tracking.validation
 import be.aufildemescoutures.domain.live_tracking.core.comment.Comment
 import be.aufildemescoutures.domain.live_tracking.core.comment.CommentId
 import be.aufildemescoutures.domain.live_tracking.core.customer.Customer
-import javax.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ValidationRepository {

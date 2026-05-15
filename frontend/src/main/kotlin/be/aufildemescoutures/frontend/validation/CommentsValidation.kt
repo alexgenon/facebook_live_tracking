@@ -8,7 +8,7 @@ import be.aufildemescoutures.domain.live_tracking.core.comment.ContestManagement
 import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import be.aufildemescoutures.frontend.ServerConfig
 import be.aufildemescoutures.frontend.ServerStatus
-import csstype.*
+import web.cssom.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString

@@ -9,11 +9,11 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jboss.logging.Logger
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.Default
-import javax.inject.Inject
-import javax.websocket.*
-import javax.websocket.server.ServerEndpoint
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Default
+import jakarta.inject.Inject
+import jakarta.websocket.*
+import jakarta.websocket.server.ServerEndpoint
 
 
 @ServerEndpoint("/live/comments/validation")

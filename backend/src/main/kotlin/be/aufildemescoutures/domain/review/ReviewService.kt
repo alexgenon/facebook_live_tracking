@@ -7,7 +7,7 @@ import io.quarkus.vertx.ConsumeEvent
 import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor
 import org.jboss.logging.Logger
-import javax.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ReviewService {

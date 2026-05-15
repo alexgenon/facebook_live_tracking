@@ -2,8 +2,8 @@ package be.aufildemescoutures.infrastructure.facebook
 
 import io.smallrye.mutiny.Multi
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
 
 @Path("{video}")
 @RegisterRestClient

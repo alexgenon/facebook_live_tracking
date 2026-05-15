@@ -7,9 +7,9 @@ import io.smallrye.mutiny.Multi
 import io.smallrye.mutiny.subscription.Cancellable
 import io.vertx.mutiny.core.eventbus.EventBus
 import org.jboss.logging.Logger
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.Default
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Default
+import jakarta.inject.Inject
 
 @ApplicationScoped
 class LiveTrackingService {

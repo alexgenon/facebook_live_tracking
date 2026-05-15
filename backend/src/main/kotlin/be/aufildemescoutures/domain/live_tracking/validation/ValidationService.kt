@@ -7,10 +7,10 @@ import be.aufildemescoutures.domain.live_tracking.core.live_event.LiveEvent
 import io.quarkus.vertx.ConsumeEvent
 import io.vertx.mutiny.core.eventbus.EventBus
 import org.jboss.logging.Logger
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.Default
-import javax.inject.Inject
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Default
+import jakarta.inject.Inject
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class ValidationService {
